@@ -1,10 +1,17 @@
-from django.conf import settings
+VERSION = (1, 0, 1)
 
-from smsgateway import backends
-from smsgateway.sms import SMSRequest
-from smsgateway.models import QueuedSMS
+
+def get_version():
+    if len(VERSION) > 3 and VERSION[3] != 'final':
+        return '%s.%s.%s %s' % (VERSION[0], VERSION[1], VERSION[2], VERSION[3])
+    else:
+        return '%s.%s.%s' % (VERSION[0], VERSION[1], VERSION[2])
+
+
+__version__ = get_version()
 
 def get_account(using=None):
+    from django.conf import settings
     accounts = settings.SMSGATEWAY_ACCOUNTS
     if using is not None:
         account_dict = accounts[using]
@@ -13,6 +20,8 @@ def get_account(using=None):
     return account_dict
 
 def send(to, msg, signature, using=None, reliable=False):
+    from smsgateway import backends
+    from smsgateway.sms import SMSRequest
     '''
     Send a text message using the gateway(s) specified in settings.py.
 
@@ -30,6 +39,7 @@ def send(to, msg, signature, using=None, reliable=False):
 
 
 def send_queued(to, msg, signature, using=None, reliable=False):
+    from smsgateway.models import QueuedSMS
     """
     Place SMS message in queue to be send.
     """

@@ -1,9 +1,9 @@
 from setuptools import setup, find_packages
-
+import smsgateway
 
 setup(
     name="django-smsgateway",
-    version='0.0.1',
+    version=smsgateway.__version__,
     url='https://github.com/citylive/django-smsgateway',
     license='BSD',
     description="SMS gateway for sending text messages",
