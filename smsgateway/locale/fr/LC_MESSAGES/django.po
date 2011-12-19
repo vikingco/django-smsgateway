@@ -1,0 +1,109 @@
+# Translations from City Live i18n database
+# Generated: 2011-03-29 11:05:11.208326
+#, fuzzy
+msgid ""
+msgstr ""
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: models.py:15
+msgid "Unknown"
+msgstr "Pas connu"
+
+#: models.py:19
+msgid "Other"
+msgstr "Autre"
+
+#: models.py:37
+msgid "Both"
+msgstr "Tous les deux"
+
+#: models.py:38
+msgid "Inbound"
+msgstr "Inbound"
+
+#: models.py:39
+msgid "Outbound"
+msgstr "Outbound"
+
+#: models.py:43
+msgid "sent"
+msgstr "envoyé"
+
+#: models.py:44
+#: models.py:66
+msgid "content"
+msgstr "contenu"
+
+#: models.py:44
+#: models.py:66
+msgid "SMS content"
+msgstr "contenu SMS"
+
+#: models.py:45
+msgid "sender"
+msgstr "expéditeur"
+
+#: models.py:46
+#: models.py:64
+msgid "receiver"
+msgstr "récepteur"
+
+#: models.py:47
+msgid "Originating operator"
+msgstr "Opérateur d'origine"
+
+#: models.py:48
+#: models.py:69
+msgid "gateway"
+msgstr "passerelle"
+
+#: models.py:48
+msgid "By which provider the SMS was handled."
+msgstr "L'opérateur par lequel le SMS a été traité."
+
+#: models.py:49
+msgid "backend"
+msgstr "base de données"
+
+#: models.py:50
+msgid "gateway reference"
+msgstr "référence de passerelle"
+
+#: models.py:50
+msgid "A reference id for the gateway"
+msgstr "Un identifiant de référence pour la passerelle"
+
+#: models.py:51
+msgid "direction"
+msgstr "direction"
+
+#: models.py:56
+msgid "SMS"
+msgstr "SMS"
+
+#: models.py:57
+msgid "SMSes"
+msgstr "SMS"
+
+#: models.py:65
+msgid "signature"
+msgstr "signature"
+
+#: models.py:70
+msgid "Via which provider the SMS will be sent."
+msgstr "L'opérateur par lequel le SMS sera traité. "
+
+#: models.py:72
+msgid "is reliable"
+msgstr "est fiable"
+
+#: models.py:79
+msgid "Queued SMS"
+msgstr "SMS en file d'attente"
+
+#: models.py:80
+msgid "Queued SMSes"
+msgstr "SMS en file d'attente"
+

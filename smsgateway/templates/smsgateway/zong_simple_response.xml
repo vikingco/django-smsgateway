@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<oneoff_response xmlns="https://api.zong.com/zapi/v1" reverse_charged="true" fragmentable="true" user_reference="{{ reference }}">
+	<text_content>{{ content }}</text_content>
+</oneoff_response>
