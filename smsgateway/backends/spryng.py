@@ -72,10 +72,7 @@ class SpryngBackend(SMSBackend):
         path = 'www.spryng.nl/send.php'
         username = account_dict['username']
         password = account_dict['password']
-        smstype = account_dict.get('SMSTYPE', 'ECONOMIC')
-
-        # Default to 'business'
-        smstype = 'BUSINESS'
+        smstype = account_dict.get('SMSTYPE', 'BUSINESS') # or 'ECONOMIC'
 
         msisdn = ','.join([x[1:] for x in sms_request.to])
         signature = sms_request.signature
