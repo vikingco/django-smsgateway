@@ -4,53 +4,47 @@ from celery.decorators import task
 from lockfile import FileLock, AlreadyLocked, LockTimeout
 
 from smsgateway import send
+from smsgateway.enums import PRIORITY_DEFERRED
 from smsgateway.models import QueuedSMS
 
 import logging
 
+logger = logging.getLogger(__name__)
 
-# lock timeout value. how long to wait for the lock to become available.
-# default behavior is to never wait for the lock to be available.
 LOCK_WAIT_TIMEOUT = getattr(settings, "SMSES_LOCK_WAIT_TIMEOUT", -1)
 
 @task
-def send_smses():
-    # Enable lock (only one sms sender at the same time)
-    lock = FileLock("send_sms")
-
-    logging.debug("acquiring lock...")
+def send_smses(send_deferred=False):
+    # Get lock so there is only one sms sender at the same time.
+    lock = FileLock('send_sms')
     try:
         lock.acquire(LOCK_WAIT_TIMEOUT)
     except AlreadyLocked:
-        logging.debug("lock already in place. quitting.")
+        logger.info('Could not acquire lock.')
         return
     except LockTimeout:
-        logging.debug("waiting for the lock timed out. quitting.")
+        logger.info('Lock timed out.')
         return
-    logging.debug("acquired.")
 
     try:
-        logging.info("%i sms messages to be send." % QueuedSMS.objects.count())
+        # Get SMSes that need to be sent (deferred or non-deferred)
+        if send_deferred:
+            to_send = QueuedSMS.objects.filter(priority=PRIORITY_DEFERRED)
+        else:
+            to_send = QueuedSMS.objects.exclude(priority=PRIORITY_DEFERRED)
 
-        for sms in list(QueuedSMS.objects.all()):
+        logger.info("Trying to send %i messages." % to_send.count())
+
+        # Send each SMS
+        for sms in to_send:
             sms_using = None if sms.using == '__none__' else sms.using
-            if send(sms.to, sms.content, sms.signature, using=sms_using, reliable=sms.reliable):
-                # On succes
-                logging.info("SMS to %s sent." % sms.to)
+            if send(sms.to, sms.content, sms.signature, sms_using, sms.reliable):
+                # Successfully sent, remove from queue
+                logger.info("SMS to %s sent." % sms.to)
                 sms.delete()
             else:
+                # Failed to send, defer SMS
+                logger.info("SMS to %s failed." % sms.to)
                 sms.defer()
-                # Failure
-                logging.info("SMS to %s failed." % sms.to)
     finally:
         lock.release()
-
-
-@task
-def send_deferred_smses(self):
-    """
-    Attempt to resend any deferred smses.
-    """
-    logging.basicConfig(level=logging.DEBUG, format="%(message)s")
-    count = QueuedSMS.objects.retry_deferred()
-    logging.info("%s message(s) retried" % count)

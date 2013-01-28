@@ -1,18 +1,18 @@
 <html>
-<head>
-	<title>SMSGateway Backend Tester</title>
-</head>
-<body>
-	<h1>SMSGateway Backend Tester</h1>
+    <head>
+        <title>SMSGateway Backend Tester</title>
+    </head>
+    <body>
+        <h1>SMSGateway Backend Tester</h1>
 
-	{% if message %}
-	<p>{{ message }}</p>
-	{% endif %}
+        {% if message %}
+        <p>{{ message }}</p>
+        {% endif %}
 
-	<form method="post" action=".">
-	  {% csrf_token %}
-		{{ form.as_p }}
-		<p><input type="submit" /></p>
-	</form>
-</body>
+        <form method="post" action=".">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <p><input type="submit" /></p>
+        </form>
+    </body>
 </html>

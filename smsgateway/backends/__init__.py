@@ -3,7 +3,7 @@ from django.core.urlresolvers import get_mod_func
 
 REGISTRY = {}
 
-backends = getattr(settings, 'SMSGATEWAY_BACKENDS', ('smsgateway.backends.mobileweb.MobileWebBackend',))
+backends = getattr(settings, 'SMSGATEWAY_BACKENDS', ())
 
 for entry in backends:
     module_name, class_name = get_mod_func(entry)
@@ -13,5 +13,3 @@ for entry in backends:
 
 def get_backend(slug):
     return REGISTRY.get(slug, None)
-
-# TODO: implement http://www.clickatell.com/developers/api_http.php
