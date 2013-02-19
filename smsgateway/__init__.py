@@ -1,10 +1,7 @@
-from django.conf import settings
-
-from smsgateway.backends import get_backend
-from smsgateway.sms import SMSRequest
-from smsgateway.models import QueuedSMS
+__version__ = '2.0.0'
 
 def get_account(using=None):
+    from django.conf import settings
     accounts = settings.SMSGATEWAY_ACCOUNTS
     if using is not None:
         return accounts[using]
@@ -22,6 +19,8 @@ def send(to, msg, signature, using=None, reliable=False):
     *   'using' is an optional parameter where you can specify a specific account
         to send messages from.
     """
+    from smsgateway.backends import get_backend
+    from smsgateway.sms import SMSRequest
     account_dict = get_account(using)
     backend = get_backend(account_dict['backend'])
     sms_request = SMSRequest(to, msg, signature, reliable=reliable)
@@ -31,6 +30,7 @@ def send_queued(to, msg, signature, using=None, reliable=False):
     """
     Place SMS message in queue to be sent.
     """
+    from smsgateway.models import QueuedSMS
     QueuedSMS.objects.create(
         to=to,
         content=msg,
