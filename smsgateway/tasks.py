@@ -16,7 +16,10 @@ LOCK_WAIT_TIMEOUT = getattr(settings, "SMSES_LOCK_WAIT_TIMEOUT", -1)
 @task
 def send_smses(send_deferred=False):
     # Get lock so there is only one sms sender at the same time.
-    lock = FileLock('send_sms')
+    if send_deferred:
+        lock = FileLock('send_sms_deferred')
+    else:
+        lock = FileLock('send_sms')
     try:
         lock.acquire(LOCK_WAIT_TIMEOUT)
     except AlreadyLocked:
