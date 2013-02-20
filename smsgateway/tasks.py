@@ -14,7 +14,7 @@ logger = logging.getLogger(__name__)
 LOCK_WAIT_TIMEOUT = getattr(settings, "SMSES_LOCK_WAIT_TIMEOUT", -1)
 
 @task
-def send_smses(send_deferred=False):
+def send_smses(send_deferred=False, backend=None):
     # Get lock so there is only one sms sender at the same time.
     if send_deferred:
         lock = FileLock('send_sms_deferred')
@@ -40,7 +40,10 @@ def send_smses(send_deferred=False):
 
         # Send each SMS
         for sms in to_send:
-            sms_using = None if sms.using == '__none__' else sms.using
+            if backend:
+                sms_using = backend
+            else:
+                sms_using = None if sms.using == '__none__' else sms.using
             if send(sms.to, sms.content, sms.signature, sms_using, sms.reliable):
                 # Successfully sent, remove from queue
                 logger.info("SMS to %s sent." % sms.to)
