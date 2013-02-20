@@ -1,16 +1,13 @@
-from django.http import HttpResponse
-from django.conf import settings
-from django.utils.http import urlencode
-
-from smsgateway.models import SMS
-from smsgateway.backends.base import SMSBackend
-from smsgateway.utils import check_cell_phone_number
-from smsgateway.sms import SMSRequest
-
-import datetime
 import codecs
 
+from django.http import HttpResponse
+
+from smsgateway.backends.base import SMSBackend
+
 class FileBackend(SMSBackend):
+    """
+    Backend for debugging purposes. Writes all SMSes to a file.
+    """
     def get_send_url(self, sms_request, account_dict):
         path = account_dict['path']
 
