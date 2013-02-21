@@ -30,10 +30,11 @@ def suite():
         settings.INSTALLED_APPS += ['smsgateway.tests',]
         map(load_app, settings.INSTALLED_APPS)
 
-    from smsgateway.tests.backends import smpp
+    from smsgateway.tests.backends import smpp, redistore
 
     testsuite = unittest.TestSuite([
         unittest.TestLoader().loadTestsFromModule(smpp),
+        unittest.TestLoader().loadTestsFromModule(redistore),
     ])
     return testsuite
 

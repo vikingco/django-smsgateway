@@ -26,13 +26,12 @@ class SMPPBackend(SMSBackend):
 
     def __init__(self):
         self.client = None
-        self.sms_list = None
         self.sender = None
         self.sms_data_iter = None
         self.sent_smses = []
 
 
-    def _initialize(self, sms_request, account_dict):
+    def _initialize(self, sms_request):
         sms_list = self._get_sms_list(sms_request)
         if not len(sms_list):
             logger.error("Nothing to send. sms_request: %s" % sms_request)
@@ -114,7 +113,7 @@ class SMPPBackend(SMSBackend):
                 
     def send(self, sms_request, account_dict):
         """SMPPBackend instances' entry point"""
-        self._initialize(sms_request, account_dict)
+        self._initialize(sms_request)
         sms_data = self.sms_data_iter.next()
         self._connect(account_dict)
         self._send_sms(sms_data)

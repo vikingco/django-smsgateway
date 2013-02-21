@@ -98,9 +98,17 @@ SMSGATEWAY_ACCOUNTS = {
         'password': 'pwd1',
         'system_type': 'www',
     },
+    'redistore': {
+        'backend': 'redistore',
+        'host': 'localhost',
+        'port': 6379,
+        'dbn': 2,
+        'key_prefix': 'test'
+    } 
 }
 
 SMSGATEWAY_BACKENDS = (
+    'smsgateway.backends.redistore.RedistoreBackend',
     'smsgateway.backends.smpp.SMPPBackend',
 )
 
@@ -129,7 +137,7 @@ LOGGING = {
             'level': 'ERROR',
             'propagate': True,
         },
-        'smsgateway.backends.smpp': {
+        'smsgateway.backends': {
             'handlers': ['console'],
             'level': 'CRITICAL',
         },
