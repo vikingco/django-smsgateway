@@ -20,7 +20,13 @@ class Command(NoArgsCommand):
             action='store_true',
             help='Whether to send the deferred smses. Default is all non-deferred.'
         ),
+        make_option(
+            '--backend',
+            dest='backend',
+            action='store',
+            help='Whether to use a certain backend.'
+        ),
     )
 
     def handle_noargs(self, **options):
-        send_smses(options['send_deferred'])
+        send_smses(options['send_deferred'], options['backend'])
