@@ -142,11 +142,17 @@ LOGGING = {
 SMSGATEWAY_ACCOUNTS = {
     '__default__': 'redistore',
     'redistore': {
+        'source_addr_ton': 0,
+        'source_addr': 15185,
+        'dest_addr_ton': 1,
         'backend': 'redistore',
         'host': 'localhost',
         'port': 6379,
-        'dbn': 2,
-        'key_prefix': 'test:'
+        # 'dbn': 2,
+        # 'key_prefix': 'test:',
+        'dbn': 3,
+        'key_prefix': 'kpn:',
+        'reply_signature': 'Mobile Vikings'
     } 
 }
 

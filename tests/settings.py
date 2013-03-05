@@ -99,12 +99,16 @@ SMSGATEWAY_ACCOUNTS = {
         'system_type': 'www',
     },
     'redistore': {
+        'source_addr_ton': 0,
+        'source_addr': 15185,
+        'dest_addr_ton': 1,
         'backend': 'redistore',
         'host': 'localhost',
         'port': 6379,
         'dbn': 2,
-        'key_prefix': 'test'
-    } 
+        'key_prefix': 'test:',
+        'reply_signature': 'Mobile Vikings'
+    }
 }
 
 SMSGATEWAY_BACKENDS = (

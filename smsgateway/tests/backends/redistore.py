@@ -14,7 +14,7 @@ from smsgateway.utils import check_cell_phone_number, truncate_sms
 
 
 req_data = {
-    'to': '0032000000001;0032000000002;0032000000003',
+    'to': '+32000000001;+32000000002;+32000000003',
     'msg': 'text of the message',
     'signature': 'cropped to 11 chars' 
 }
@@ -72,8 +72,8 @@ class RedistoreSendSingleSMSTestCase(DjangoTestCase):
 
     def test_redis_keys(self):
         key = hashlib.md5(self.sms.gateway_ref).hexdigest()
-        queue_key = '%soq:%s' % (self.conf['key_prefix'], key)
-        allqueues_key = '%soqs' % self.conf['key_prefix']
+        queue_key = '%ssmsreq:%s' % (self.conf['key_prefix'], key)
+        allqueues_key = '%soutq' % self.conf['key_prefix']
         sms_key = '%ssms:%s:0' % (self.conf['key_prefix'], key)
         self.assertTrue(self.rdb.exists(queue_key))
         self.assertTrue(self.rdb.exists(allqueues_key))
@@ -86,9 +86,10 @@ class RedistoreSendSingleSMSTestCase(DjangoTestCase):
         self.assertEqual(
             self.rdb.hgetall(sms_key), {
                 'source_addr_ton': '0',
-                'source_addr': '0',
-                'dest_addr_ton': '0',
+                'source_addr': '15185',
+                'dest_addr_ton': '1',
                 'destination_addr': '+32000000001',
+                'esme_vrfy_seqn': '-1',
                 'short_message': 'testing message'})
 
 

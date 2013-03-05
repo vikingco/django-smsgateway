@@ -42,7 +42,7 @@ class RedistoreBackend(SMSBackend):
             self.sender = sms_request.signature
         else: self.sender = u'[%s]' % self.get_slug()
 
-        self.sms_data_iter = SMSDataIterator(sms_list)
+        self.sms_data_iter = SMSDataIterator(sms_list, account_dict)
         self.redis_key_prefix = account_dict['key_prefix']
         self.redis_pool = redis.ConnectionPool(host=account_dict['host'], 
                                                port=account_dict['port'], 
@@ -71,8 +71,8 @@ class RedistoreBackend(SMSBackend):
 
         pipe = self.redis_conn.pipeline(transaction=False)
         key = hashlib.md5(self.reference).hexdigest()
-        queue_key = self.prefix('oq:%s' % key)
-        allqueues_key = self.prefix('oqs')
+        queue_key = self.prefix('smsreq:%s' % key)
+        allqueues_key = self.prefix('outq')
 
         # feed the pipe
         for idx, sms_data in enumerate(self.sms_data_iter):
@@ -136,8 +136,11 @@ class RedistoreBackend(SMSBackend):
 
 
 class SMSDataIterator:
-    def __init__(self, sms_list):
+    def __init__(self, sms_list, account_dict):
         self.sms_list = sms_list
+        self.source_addr_ton = account_dict['source_addr_ton']
+        self.source_addr = account_dict['source_addr']
+        self.dest_addr_ton = account_dict['dest_addr_ton']
 
     def __iter__(self):
         return self
@@ -150,11 +153,12 @@ class SMSDataIterator:
             text = text.encode('iso-8859-1', 'replace')
             
             return {
-                'source_addr_ton': 0, 
-                'source_addr': 0,
-                'dest_addr_ton': 0, 
-                'destination_addr': sms.to[0], # only one msisdn at this point
+                'source_addr_ton': self.source_addr_ton, 
+                'source_addr': self.source_addr,
+                'dest_addr_ton': self.dest_addr_ton, 
+                'destination_addr': sms.to[0],
                 'short_message': text,
+                'esme_vrfy_seqn': -1,
                 'source_sms': sms
              }
         raise StopIteration
