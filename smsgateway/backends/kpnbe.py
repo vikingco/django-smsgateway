@@ -3,7 +3,7 @@ from django.http import HttpResponse
 from django.conf import settings
 from django.utils.http import urlencode
 
-from features.utils import is_enabled
+from gargoyle import gargoyle
 
 from smsgateway.backends.base import SMSBackend
 
@@ -25,7 +25,7 @@ class KPNBEBackend(SMSBackend):
         if 'endpoint' in account_dict:
             endpoint = account_dict['endpoint']
         else:
-            url = 'secondary' if is_enabled('smsgateway_kpn_use_secondary_url') else 'primary'
+            url = 'secondary' if gargoyle.is_active('smsgateway-kpn-use-secondary-url') else 'primary'
             endpoint = settings.SMSGATEWAY_KPNBE_URLS[url] + account_dict['username']
 
         # Encode message
