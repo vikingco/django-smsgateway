@@ -1,3 +1,6 @@
+import logging
+logger = logging.getLogger(__name__)
+
 def strspn(source, allowed):
     newchrs = []
     for c in source:
@@ -15,8 +18,11 @@ def check_cell_phone_number(number):
 
 def truncate_sms(text, max_length=160):
     if len(text) <= max_length:
+        if len(text) > 140:
+            logger.warning("SMS possibly too long (>140 chars): %s", text)
         return text
     else:
+        logger.error("SMS is too long (>160 chars): %s", text)
         return text[:max_length-3] + '...'
 
 def parse_sms(content):
