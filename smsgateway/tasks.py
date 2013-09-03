@@ -74,15 +74,18 @@ def recv_smses(account_slug='redistore'):
                                  db=racc['dbn'])
     rconn = redis.Redis(connection_pool=rpool)
     smsbackend = SMSBackend()
-    logger.info("Processing incoming SMSes")
+    logger.info("Processing incoming SMSes for %s", account_slug)
 
     while True:
         smsk = rconn.rpoplpush(_('inq'), _('mvne:inq'))
         if not rconn.llen(_('mvne:inq')):
             break
         count += 1
-        logger.debug("Processing incoming SMS key: %s" % smsk)
+        logger.debug("Processing incoming SMS key: %s", smsk)
         smsd = rconn.hgetall(smsk)
+        if not smsd:
+            logger.error("SMS key %r is empty", smsk)
+            continue
         smsd['sent'] = datetime.datetime.strptime(smsd['sent'], inq_ts_fmt)
         smsd['backend'] = account_slug
         smsobj = SMS(**smsd)
@@ -93,10 +96,10 @@ def recv_smses(account_slug='redistore'):
             if not success:
                 send_queued(smsobj.sender, response, signature, account_slug)
         if rconn.lrem(_('mvne:inq'), smsk, 1) == 0:
-            logger.error("SMS key %r doesn't exist in %r" 
-                         % (smsk, _('mvne:inq')))
+            logger.error("SMS key %r doesn't exist in %r",
+                         smsk, _('mvne:inq'))
         if not rconn.delete(smsk):
             logger.error("SMS Hash %r doesn't exist" % smsk)
-        logger.debug("End processing incoming SMS key: %s" % smsk)
+        logger.debug("End processing incoming SMS key: %s", smsk)
 
-    logger.info("End processing incoming SMSes (%d processed)" % count)
+    logger.info("End processing incoming SMSes for %s (%d processed)", account_slug, count)
