@@ -3,7 +3,7 @@ import logging
 import redis
 
 from django.conf import settings
-from celery.decorators import task
+from celery.task import task
 
 from lockfile import FileLock, AlreadyLocked, LockTimeout
 
