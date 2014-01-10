@@ -1,4 +1,4 @@
-from django.conf.urls.defaults import patterns, url
+from django.conf.urls import patterns, url
 
 from smsgateway.views import backend_debug, backend_handle_incoming
 
