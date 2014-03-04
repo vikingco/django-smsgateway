@@ -9,12 +9,10 @@ def strspn(source, allowed):
     return u''.join(newchrs)
 
 def check_cell_phone_number(number):
-    cleaned_number = strspn(number, u'+0123456789')
-
-    if not u'+' in cleaned_number[:1]:
-        cleaned_number = u'+%s' % cleaned_number
-
-    return cleaned_number
+    cleaned_number = strspn(number, u'0123456789')
+    #if not u'+' in cleaned_number[:1]:
+    #    cleaned_number = u'+%s' % cleaned_number
+    return int(cleaned_number)
 
 def truncate_sms(text, max_length=160):
     if len(text) <= max_length:
