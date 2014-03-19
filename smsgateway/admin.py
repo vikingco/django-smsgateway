@@ -2,9 +2,10 @@ from django.contrib import admin
 
 from smsgateway.models import SMS, QueuedSMS
 
+
 class SMSAdmin(admin.ModelAdmin):
     date_hierarchy = 'sent'
-    list_display = ('direction', 'sent', 'sender', 'to', 'content', 'operator', 'backend', 'gateway', 'gateway_ref',)
+    list_display = ('direction', 'sent', 'sender', 'to', 'content', 'operator', 'backend', 'gateway', 'gateway_ref', 'processed')
     search_fields = ('sender', 'to', 'content',)
     list_filter = ('operator', 'direction', 'gateway', 'backend')
 

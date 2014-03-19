@@ -8,6 +8,7 @@ from smsgateway.enums import (OPERATOR_CHOICES, OPERATOR_UNKNOWN,
 
 import datetime
 
+
 class SMS(models.Model):
     sent = models.DateTimeField(default=datetime.datetime.now, verbose_name=_(u'sent'))
     content = models.TextField(verbose_name=_(u'content'), help_text=_(u'SMS content'))
@@ -18,6 +19,7 @@ class SMS(models.Model):
     backend = models.CharField(max_length=32, db_index=True, default='unknown', verbose_name=_(u'backend'))
     gateway_ref = models.CharField(max_length=32, blank=True, verbose_name=_(u'gateway reference'), help_text=_(u'A reference id for the gateway'))
     direction = models.IntegerField(choices=DIRECTION_CHOICES, default=DIRECTION_INBOUND, verbose_name=_(u'direction'))
+    processed_on = models.DateTimeField( verbose_name=_(u'processed on'), blank=True, null=True)
 
     class Meta:
         get_latest_by = 'sent'
