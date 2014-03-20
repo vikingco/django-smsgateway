@@ -95,7 +95,7 @@ def recv_smses(account_slug='redistore'):
         count += 1
         logger.debug("Saving incoming SMS key: %s", smsk)
         smsd = rconn.hgetall(smsk)
-        if smsd is None:
+        if not smsd:
             logger.error("SMS key %r is empty", smsk)
             continue
         smsd['sent'] = datetime.datetime.strptime(smsd['sent'], inq_ts_fmt)
