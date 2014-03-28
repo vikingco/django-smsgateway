@@ -60,7 +60,7 @@ def send_smses(send_deferred=False, backend=None):
         lock.release()
 
 
-inq_ts_fmt = '%Y-%m-%d %H:%M:%S.%f'
+inq_ts_fmt = '%Y-%m-%d %H:%M:%S'
 
 @task
 def recv_smses(account_slug='redistore'):
@@ -86,7 +86,9 @@ def recv_smses(account_slug='redistore'):
         if not smsd:
             logger.error("SMS key %r is empty", smsk)
             continue
-        smsd['sent'] = datetime.datetime.strptime(smsd['sent'], inq_ts_fmt)
+        # since microsecond are not always present - we remove them 
+        smsd['sent'] = datetime.datetime.strptime(smsd['sent'].split('.')[0], 
+                                                  inq_ts_fmt)
         smsd['backend'] = account_slug
         smsobj = SMS(**smsd)
         response = smsbackend.process_incoming(None, smsobj)
