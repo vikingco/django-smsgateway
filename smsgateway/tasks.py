@@ -63,6 +63,19 @@ def send_smses(send_deferred=False, backend=None):
 inq_ts_fmt = '%Y-%m-%d %H:%M:%S'
 
 @task
+def process_smses(smsk, smsobj, account_slug):
+    smsbackend = SMSBackend()
+    racc = get_account(account_slug)
+
+    response = smsbackend.process_incoming(None, smsobj)
+    if response is not None:
+        signature = racc['reply_signature']
+        success = send([smsobj.sender], response, signature, account_slug)
+        if not success:
+            send_queued(smsobj.sender, response, signature, account_slug)
+    logger.debug("End processing incoming SMS key: %s", smsk)
+
+
 def recv_smses(account_slug='redistore'):
     def _(key):
         return '%s%s' % (racc['key_prefix'], key)
@@ -73,15 +86,14 @@ def recv_smses(account_slug='redistore'):
                                  port=racc['port'],
                                  db=racc['dbn'])
     rconn = redis.Redis(connection_pool=rpool)
-    smsbackend = SMSBackend()
     logger.info("Processing incoming SMSes for %s", account_slug)
 
     while True:
-        smsk = rconn.rpoplpush(_('inq'), _('mvne:inq'))
-        if not rconn.llen(_('mvne:inq')):
+        smsk = rconn.lpop(_('inq'))
+        if smsk is None:
             break
         count += 1
-        logger.debug("Processing incoming SMS key: %s", smsk)
+        logger.debug("Saving incoming SMS key: %s", smsk)
         smsd = rconn.hgetall(smsk)
         if not smsd:
             logger.error("SMS key %r is empty", smsk)
@@ -90,18 +102,10 @@ def recv_smses(account_slug='redistore'):
         smsd['sent'] = datetime.datetime.strptime(smsd['sent'].split('.')[0],
                                                   inq_ts_fmt)
         smsd['backend'] = account_slug
+        smsd['processed_on'] = None
         smsobj = SMS(**smsd)
-        response = smsbackend.process_incoming(None, smsobj)
-        if response is not None:
-            signature = racc['reply_signature']
-            success = send([smsobj.sender], response, signature, account_slug)
-            if not success:
-                send_queued(smsobj.sender, response, signature, account_slug)
-        if rconn.lrem(_('mvne:inq'), smsk, 1) == 0:
-            logger.error("SMS key %r doesn't exist in %r",
-                         smsk, _('mvne:inq'))
-        if not rconn.delete(smsk):
-            logger.error("SMS Hash %r doesn't exist" % smsk)
-        logger.debug("End processing incoming SMS key: %s", smsk)
+        smsobj.save()
+        process_smses.apply_async((smsk, smsobj, account_slug), )
 
-    logger.info("End processing incoming SMSes for %s (%d processed)", account_slug, count)
+    logger.info("End sharing out incoming SMSes for %s (%d saved).",
+                account_slug, count)
