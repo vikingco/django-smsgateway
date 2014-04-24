@@ -14,11 +14,14 @@ class SpryngBackend(SMSBackend):
         except:
             pass
 
+        if isinstance(sms_request.to, basestring):
+            sms_request.to = [ sms_request.to ]
+
         querystring = urlencode({
             'REFERENCE': sms_request.reference or '',
             'USERNAME': account_dict['username'],
             'PASSWORD': account_dict['password'],
-            'DESTINATION': ','.join([x[1:] for x in sms_request.to]),
+            'DESTINATION': ','.join(sms_request.to),
             'SENDER': sms_request.signature,
             'BODY': msg,
             'SERVICE': 'smsgateway',
