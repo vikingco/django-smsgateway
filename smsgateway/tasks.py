@@ -4,6 +4,7 @@ import redis
 
 from django.conf import settings
 from celery.task import task
+from django_statsd.clients import statsd
 
 from lockfile import FileLock, AlreadyLocked, LockTimeout
 
@@ -33,6 +34,7 @@ def send_smses(send_deferred=False, backend=None):
         logger.info('Lock timed out.')
         return
 
+    successes, failures = 0, 0
     try:
         # Get SMSes that need to be sent (deferred or non-deferred)
         if send_deferred:
@@ -52,12 +54,15 @@ def send_smses(send_deferred=False, backend=None):
                 # Successfully sent, remove from queue
                 logger.info("SMS to %s sent." % sms.to)
                 sms.delete()
+                successes += 1
             else:
                 # Failed to send, defer SMS
                 logger.info("SMS to %s failed." % sms.to)
                 sms.defer()
+                failures += 1
     finally:
         lock.release()
+        statsd.gauge('smsgateway.success_rate', successes / failures)
 
 
 inq_ts_fmt = '%Y-%m-%d %H:%M:%S.%f'
@@ -69,8 +74,8 @@ def recv_smses(account_slug='redistore'):
 
     count = 0
     racc = get_account(account_slug)
-    rpool = redis.ConnectionPool(host=racc['host'], 
-                                 port=racc['port'], 
+    rpool = redis.ConnectionPool(host=racc['host'],
+                                 port=racc['port'],
                                  db=racc['dbn'])
     rconn = redis.Redis(connection_pool=rpool)
     smsbackend = SMSBackend()
