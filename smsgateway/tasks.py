@@ -62,7 +62,10 @@ def send_smses(send_deferred=False, backend=None):
                 failures += 1
     finally:
         lock.release()
-        statsd.gauge('smsgateway.success_rate', successes / failures)
+        if successes and failures:
+            statsd.gauge('smsgateway.success_rate', successes / failures)
+        else:
+            statsd.gauge('smsgateway.success_rate', 1)
 
 
 inq_ts_fmt = '%Y-%m-%d %H:%M:%S.%f'
