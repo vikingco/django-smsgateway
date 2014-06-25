@@ -1,4 +1,6 @@
 import logging
+import re
+
 logger = logging.getLogger(__name__)
 
 def strspn(source, allowed):
@@ -24,7 +26,11 @@ def truncate_sms(text, max_length=160):
         return text[:max_length-3] + '...'
 
 def parse_sms(content):
+
+    # work with uppercase and single spaces
     content = content.upper().strip()
+    content = re.sub('\s+', " ", content)
+
     from smsgateway.backends.base import hook
     for keyword, subkeywords in hook.iteritems():
         if content[:len(keyword)] == unicode(keyword):
