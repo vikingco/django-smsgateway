@@ -1,6 +1,7 @@
 import urllib2
 import logging
 import datetime
+import re
 
 from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
@@ -106,9 +107,13 @@ class SMSBackend(object):
         """
         Process an incoming SMS message and call the correct hook.
         """
+
         sms.save()
 
+        # work with uppercase and single spaces
         content = sms.content.upper().strip()
+        content = re.sub('\s+', " ", content)
+
 
         for keyword, subkeywords in hook.iteritems():
             if content[:len(keyword)] == unicode(keyword):
