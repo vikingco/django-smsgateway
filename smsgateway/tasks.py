@@ -78,9 +78,12 @@ def process_smses(smsk, smsobj, account_slug):
     response = smsbackend.process_incoming(None, smsobj)
     if response is not None:
         signature = racc['reply_signature']
-        success = send([smsobj.sender], response, signature, account_slug)
+        # If an SMS account can receive but not send SMSes,
+        # it can specify a preferred reply account
+        reply_account = racc.get('reply_account', account_slug)
+        success = send([smsobj.sender], response, signature, reply_account)
         if not success:
-            send_queued(smsobj.sender, response, signature, account_slug)
+            send_queued(smsobj.sender, response, signature, reply_account)
     logger.debug("End processing incoming SMS key: %s", smsk)
 
 
@@ -110,6 +113,10 @@ def recv_smses(account_slug='redistore'):
         smsd['sent'] = datetime.datetime.strptime(smsd['sent'].split('.')[0],
                                                   inq_ts_fmt)
         smsd['backend'] = account_slug
+        # Compatibility with older code that expects numbers to starts with '+'
+        sender_prefix = racc.get('sender_prefix')
+        if sender_prefix and not smsd['sender'].startswith(sender_prefix):
+            smsd['sender'] = sender_prefix + smsd['sender']
         smsobj = SMS(**smsd)
         smsobj.save()
         process_smses.apply_async((smsk, smsobj, account_slug), )
