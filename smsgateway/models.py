@@ -19,7 +19,6 @@ class SMS(models.Model):
     backend = models.CharField(max_length=32, db_index=True, default='unknown', verbose_name=_(u'backend'))
     gateway_ref = models.CharField(max_length=32, blank=True, verbose_name=_(u'gateway reference'), help_text=_(u'A reference id for the gateway'))
     direction = models.IntegerField(choices=DIRECTION_CHOICES, default=DIRECTION_INBOUND, verbose_name=_(u'direction'))
-    processed_on = models.DateTimeField( verbose_name=_(u'processed on'), blank=True, null=True)
 
     class Meta:
         get_latest_by = 'sent'

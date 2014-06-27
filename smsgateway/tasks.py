@@ -110,7 +110,6 @@ def recv_smses(account_slug='redistore'):
         smsd['sent'] = datetime.datetime.strptime(smsd['sent'].split('.')[0],
                                                   inq_ts_fmt)
         smsd['backend'] = account_slug
-        smsd['processed_on'] = None
         smsobj = SMS(**smsd)
         smsobj.save()
         process_smses.apply_async((smsk, smsobj, account_slug), )

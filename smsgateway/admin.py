@@ -5,7 +5,7 @@ from smsgateway.models import SMS, QueuedSMS
 
 class SMSAdmin(admin.ModelAdmin):
     date_hierarchy = 'sent'
-    list_display = ('direction', 'sent', 'sender', 'to', 'content', 'operator', 'backend', 'gateway', 'gateway_ref', 'processed_on')
+    list_display = ('direction', 'sent', 'sender', 'to', 'content', 'operator', 'backend', 'gateway', 'gateway_ref')
     search_fields = ('sender', 'to', 'content',)
     list_filter = ('operator', 'direction', 'gateway', 'backend')
 
