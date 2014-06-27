@@ -8,6 +8,7 @@ from smsgateway.enums import (OPERATOR_CHOICES, OPERATOR_UNKNOWN,
 
 import datetime
 
+
 class SMS(models.Model):
     sent = models.DateTimeField(default=datetime.datetime.now, verbose_name=_(u'sent'))
     content = models.TextField(verbose_name=_(u'content'), help_text=_(u'SMS content'))
