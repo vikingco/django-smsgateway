@@ -114,9 +114,9 @@ def recv_smses(account_slug='redistore'):
                                                   inq_ts_fmt)
         smsd['backend'] = account_slug
         # Compatibility with older code that expects numbers to starts with '+'
-        sender_prefix = racc.get('sender_prefix')
-        if sender_prefix and not smsd['sender'].startswith(sender_prefix):
-            smsd['sender'] = sender_prefix + smsd['sender']
+        msisdn_prefix = getattr(settings, 'SMSGATEWAY_MSISDN_PREFIX', '')
+        if msisdn_prefix and not smsd['sender'].startswith(msisdn_prefix):
+            smsd['sender'] = msisdn_prefix + smsd['sender']
         smsobj = SMS(**smsd)
         smsobj.save()
         process_smses.apply_async((smsk, smsobj, account_slug), )

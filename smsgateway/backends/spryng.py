@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from django.http import HttpResponse
 from django.utils.http import urlencode
+from django.conf import settings
 
 from smsgateway.backends.base import SMSBackend
 
@@ -16,6 +17,11 @@ class SpryngBackend(SMSBackend):
 
         if isinstance(sms_request.to, basestring):
             sms_request.to = [ sms_request.to ]
+
+        # Spryng doesn't accept the prefix '+'
+        msisdn_prefix = getattr(settings, 'SMSGATEWAY_MSISDN_PREFIX', '')
+        if msisdn_prefix and sms_request.to.startswith(msisdn_prefix):
+            sms_request.to = sms_request.to[len(msisdn_prefix):]
 
         querystring = urlencode({
             'REFERENCE': sms_request.reference or '',
