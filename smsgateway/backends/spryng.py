@@ -20,8 +20,14 @@ class SpryngBackend(SMSBackend):
 
         # Spryng doesn't accept the prefix '+'
         msisdn_prefix = getattr(settings, 'SMSGATEWAY_MSISDN_PREFIX', '')
-        if msisdn_prefix and sms_request.to.startswith(msisdn_prefix):
-            sms_request.to = sms_request.to[len(msisdn_prefix):]
+        if msisdn_prefix:
+            to_addresses = []
+            for to in sms_request.to:
+                if to.startswith(msisdn_prefix):
+                    to = to[len(msisdn_prefix):]
+                to_addresses.append(to)
+            sms_request.to = to_addresses
+
 
         querystring = urlencode({
             'REFERENCE': sms_request.reference or '',
