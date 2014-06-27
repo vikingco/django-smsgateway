@@ -17,7 +17,6 @@ from smsgateway.sms import SMSRequest
 logger = logging.getLogger(__name__)
 
 
-
 class RedistoreBackend(SMSBackend):
 
     def __init__(self):
@@ -28,10 +27,10 @@ class RedistoreBackend(SMSBackend):
         self.sender = None
         self.sms_data_iter = None
         self.sent_smses = []
-        
+
     def prefix(self, key):
         return '%s%s' % (self.redis_key_prefix, key)
-        
+
     def _initialize(self, sms_request, account_dict):
         sms_list = self._get_sms_list(sms_request)
         if not len(sms_list):
@@ -44,8 +43,8 @@ class RedistoreBackend(SMSBackend):
 
         self.sms_data_iter = SMSDataIterator(sms_list, account_dict)
         self.redis_key_prefix = account_dict['key_prefix']
-        self.redis_pool = redis.ConnectionPool(host=account_dict['host'], 
-                                               port=account_dict['port'], 
+        self.redis_pool = redis.ConnectionPool(host=account_dict['host'],
+                                               port=account_dict['port'],
                                                db=account_dict['dbn'])
         return True
 
@@ -54,12 +53,12 @@ class RedistoreBackend(SMSBackend):
         if not sms_request:
             return []
         sms_list = []
-        self.reference = (datetime.datetime.now().strftime('%Y%m%d%H%M%S') 
-                          + u''.join(sms_request.to[:1]))
+        self.reference = (datetime.datetime.now().strftime('%Y%m%d%H%M%S')
+                          + '+' + u''.join(sms_request.to[:1]))
         for msisdn in sms_request.to:
-            sms_list.append(SMSRequest(msisdn, 
-                                       sms_request.msg, 
-                                       sms_request.signature, 
+            sms_list.append(SMSRequest(msisdn,
+                                       sms_request.msg,
+                                       sms_request.signature,
                                        reliable=sms_request.reliable,
                                        reference=self.reference))
         return sms_list
@@ -81,7 +80,7 @@ class RedistoreBackend(SMSBackend):
             pipe.hmset(sms_key, sms_data)
             pipe.rpush(queue_key, sms_key)
             sent_sms = {
-                'sender': self.sender, 
+                'sender': self.sender,
                 'to': sms_data['destination_addr'],
                 'content': source_sms.msg,
                 'backend': self.get_slug(),
@@ -120,7 +119,7 @@ class RedistoreBackend(SMSBackend):
             return True
         else:
             return False
-                
+
 
     def send(self, sms_request, account_dict):
         """RedistoreBackend Entry Point"""
@@ -151,11 +150,11 @@ class SMSDataIterator:
             text = sms.msg
             text = text.replace(u'€', u'EUR')
             text = text.encode('iso-8859-1', 'replace')
-            
+
             return {
-                'source_addr_ton': self.source_addr_ton, 
+                'source_addr_ton': self.source_addr_ton,
                 'source_addr': self.source_addr,
-                'dest_addr_ton': self.dest_addr_ton, 
+                'dest_addr_ton': self.dest_addr_ton,
                 'destination_addr': sms.to[0],
                 'short_message': text,
                 'esme_vrfy_seqn': -1,
