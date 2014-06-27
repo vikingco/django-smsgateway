@@ -71,7 +71,8 @@ def send_smses(send_deferred=False, backend=None):
 inq_ts_fmt = '%Y-%m-%d %H:%M:%S'
 
 @task
-def process_smses(smsk, smsobj, account_slug):
+def process_smses(smsk, sms_id, account_slug):
+    smsobj = SMS.objects.get(pk=sms_id)
     smsbackend = SMSBackend()
     racc = get_account(account_slug)
 
@@ -87,7 +88,7 @@ def process_smses(smsk, smsobj, account_slug):
     logger.debug("End processing incoming SMS key: %s", smsk)
 
 
-def recv_smses(account_slug='redistore'):
+def recv_smses(account_slug='redistore', async=False):
     def _(key):
         return '%s%s' % (racc['key_prefix'], key)
 
@@ -98,6 +99,8 @@ def recv_smses(account_slug='redistore'):
                                  db=racc['dbn'])
     rconn = redis.Redis(connection_pool=rpool)
     logger.info("Processing incoming SMSes for %s", account_slug)
+
+    process_func = process_smses.delay if async else process_smses
 
     while True:
         smsk = rconn.lpop(_('inq'))
@@ -119,7 +122,7 @@ def recv_smses(account_slug='redistore'):
             smsd['sender'] = msisdn_prefix + smsd['sender']
         smsobj = SMS(**smsd)
         smsobj.save()
-        process_smses.apply_async((smsk, smsobj, account_slug), )
+        process_func(smsk, smsobj.pk, account_slug)
 
     logger.info("End sharing out incoming SMSes for %s (%d saved).",
                 account_slug, count)

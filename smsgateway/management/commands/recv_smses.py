@@ -8,7 +8,12 @@ class Command(NoArgsCommand):
     option_list = NoArgsCommand.option_list + (
             make_option('--backend',
                 help='Slug of the SMS backend to read from'),
+            make_option('--async',
+                action="store_true",
+                dest="async",
+                default=False,
+                help="Process the SMSes via asynchronously via Celery")
             )
 
     def handle_noargs(self, **options):
-        recv_smses(options['backend'])
+        recv_smses(options['backend'], options['async'])
