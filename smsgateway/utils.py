@@ -20,6 +20,7 @@ def check_cell_phone_number(number):
     return str(cleaned_number)
 
 def truncate_sms(text, max_length=160):
+    text = text.strip()
     if len(text) <= max_length:
         return text
     else:
