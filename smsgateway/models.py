@@ -12,8 +12,8 @@ import datetime
 class SMS(models.Model):
     sent = models.DateTimeField(default=datetime.datetime.now, verbose_name=_(u'sent'))
     content = models.TextField(verbose_name=_(u'content'), help_text=_(u'SMS content'))
-    sender = models.CharField(max_length=32, verbose_name=_(u'sender'))
-    to = models.CharField(max_length=32, verbose_name=_(u'receiver'))
+    sender = models.CharField(max_length=32, verbose_name=_(u'sender'), db_index=True)
+    to = models.CharField(max_length=32, verbose_name=_(u'receiver'), db_index=True)
     operator = models.IntegerField(choices=OPERATOR_CHOICES, default=OPERATOR_UNKNOWN, verbose_name=_(u'Originating operator'))
     gateway = models.IntegerField(choices=GATEWAY_CHOICES, default=0, verbose_name=_(u'gateway'), help_text=_(u'By which provider the SMS was handled.'))
     backend = models.CharField(max_length=32, db_index=True, default='unknown', verbose_name=_(u'backend'))
