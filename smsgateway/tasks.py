@@ -3,7 +3,7 @@ import logging
 import redis
 
 from django.conf import settings
-from celery.task import task
+from celery import shared_task as task
 from django_statsd.clients import statsd
 
 from lockfile import FileLock, AlreadyLocked, LockTimeout
