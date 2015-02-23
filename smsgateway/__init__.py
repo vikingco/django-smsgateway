@@ -26,15 +26,18 @@ def send(to, msg, signature, using=None, reliable=False):
     sms_request = SMSRequest(to, msg, signature, reliable=reliable)
     return backend.send(sms_request, account_dict)
 
-def send_queued(to, msg, signature, using=None, reliable=False):
+def send_queued(to, msg, signature, using=None, reliable=False, priority=None):
     """
     Place SMS message in queue to be sent.
     """
     from smsgateway.models import QueuedSMS
-    QueuedSMS.objects.create(
+    queued_sms = QueuedSMS(
         to=to,
         content=msg,
         signature=signature,
         using=using if using is not None else '__none__',
         reliable=reliable
     )
+    if priority is not None:
+        queued_sms.priority = priority
+    queued_sms.save()
