@@ -48,7 +48,8 @@ class RecvSMSesTestCase(DjangoTestCase):
         self.conf = ACCOUNTS['redistore']
         self.rdb = redis.Redis(host=self.conf['host'], 
                                port=self.conf['port'],
-                               db=self.conf['dbn'])
+                               db=self.conf['dbn'],
+                               password=self.conf['pwd'])
         self.assert_(SMS.objects.count() == 0)
 
     def tearDown(self):

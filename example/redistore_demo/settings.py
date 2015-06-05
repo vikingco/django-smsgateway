@@ -151,6 +151,7 @@ SMSGATEWAY_ACCOUNTS = {
         # 'dbn': 2,
         # 'key_prefix': 'test:',
         'dbn': 3,
+        'pwd': None,
         'key_prefix': 'kpn:',
         'reply_signature': 'Mobile Vikings'
     } 

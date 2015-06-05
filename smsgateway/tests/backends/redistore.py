@@ -52,7 +52,8 @@ class RedistoreSendSingleSMSTestCase(DjangoTestCase):
         self.conf = settings.SMSGATEWAY_ACCOUNTS['redistore']
         self.rdb = redis.Redis(host=self.conf['host'], 
                                port=self.conf['port'],
-                               db=self.conf['dbn'])
+                               db=self.conf['dbn'],
+                               password=self.conf['pwd'])
         self.assert_(SMS.objects.count() == 0)
         send('+32000000001', 'testing message', 'the signature', 
              using='redistore') 
@@ -98,7 +99,8 @@ class RedistoreSendMultipleSMSTestCase(DjangoTestCase):
         self.conf = settings.SMSGATEWAY_ACCOUNTS['redistore']
         self.rdb = redis.Redis(host=self.conf['host'], 
                                port=self.conf['port'],
-                               db=self.conf['dbn'])
+                               db=self.conf['dbn'],
+                               password=self.conf['pwd'])
         self.assert_(SMS.objects.count() == 0)
         send(req_data['to'], req_data['msg'], req_data['signature'],
              using='redistore') 

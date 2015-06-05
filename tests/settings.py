@@ -106,6 +106,7 @@ SMSGATEWAY_ACCOUNTS = {
         'host': 'localhost',
         'port': 6379,
         'dbn': 2,
+        'pwd': None,
         'key_prefix': 'test:',
         'reply_signature': 'Mobile Vikings'
     }

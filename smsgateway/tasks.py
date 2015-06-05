@@ -96,7 +96,8 @@ def recv_smses(account_slug='redistore', async=False):
     racc = get_account(account_slug)
     rpool = redis.ConnectionPool(host=racc['host'],
                                  port=racc['port'],
-                                 db=racc['dbn'])
+                                 db=racc['dbn'],
+                                 password=racc['pwd'])
     rconn = redis.Redis(connection_pool=rpool)
     logger.info("Processing incoming SMSes for %s", account_slug)
 

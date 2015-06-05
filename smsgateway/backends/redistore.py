@@ -45,7 +45,8 @@ class RedistoreBackend(SMSBackend):
         self.redis_key_prefix = account_dict['key_prefix']
         self.redis_pool = redis.ConnectionPool(host=account_dict['host'],
                                                port=account_dict['port'],
-                                               db=account_dict['dbn'])
+                                               db=account_dict['dbn'],
+                                               password=account_dict['pwd'])
         return True
 
 
