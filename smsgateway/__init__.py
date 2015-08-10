@@ -19,6 +19,10 @@ def send(to, msg, signature, using=None, reliable=False):
     *   'using' is an optional parameter where you can specify a specific account
         to send messages from.
     """
+    # Don't send empty smses
+    if not msg:
+        return
+
     from smsgateway.backends import get_backend
     from smsgateway.sms import SMSRequest
     account_dict = get_account(using)
@@ -30,6 +34,10 @@ def send_queued(to, msg, signature, using=None, reliable=False, priority=None):
     """
     Place SMS message in queue to be sent.
     """
+    # Don't send empty smses
+    if not msg:
+        return
+
     from smsgateway.models import QueuedSMS
     queued_sms = QueuedSMS(
         to=to,
