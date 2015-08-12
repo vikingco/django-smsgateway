@@ -4,13 +4,9 @@ import hashlib
 import logging
 import redis
 
-from django.conf import settings
-from django.utils.http import urlencode
-
 from smsgateway.enums import DIRECTION_OUTBOUND
 from smsgateway.models import SMS
 from smsgateway.backends.base import SMSBackend
-from smsgateway.utils import check_cell_phone_number
 from smsgateway.sms import SMSRequest
 
 
@@ -113,9 +109,6 @@ class RedistoreBackend(SMSBackend):
             instance_data = self.sent_smses.pop(0)
             if created and listlen == counter:
                 SMS.objects.create(**instance_data)
-            else:
-                logger.error("Error while registering SMS in Redis. "
-                             "SMS: %s" % instance_data)
         if results.pop():
             return True
         else:
