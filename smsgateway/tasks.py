@@ -18,8 +18,9 @@ logger = logging.getLogger(__name__)
 
 LOCK_WAIT_TIMEOUT = getattr(settings, "SMSES_LOCK_WAIT_TIMEOUT", -1)
 
+
 @task
-def send_smses(send_deferred=False, backend=None):
+def send_smses(send_deferred=False, backend=None, limit=None):
     # Get lock so there is only one sms sender at the same time.
     if send_deferred:
         lock = FileLock('send_sms_deferred')
@@ -41,6 +42,9 @@ def send_smses(send_deferred=False, backend=None):
             to_send = QueuedSMS.objects.filter(priority=PRIORITY_DEFERRED)
         else:
             to_send = QueuedSMS.objects.exclude(priority=PRIORITY_DEFERRED)
+
+        if isinstance(limit, int):
+            to_send = to_send[:limit]
 
         logger.info("Trying to send %i messages." % to_send.count())
 
@@ -69,6 +73,7 @@ def send_smses(send_deferred=False, backend=None):
 
 
 inq_ts_fmt = '%Y-%m-%d %H:%M:%S'
+
 
 @task
 def process_smses(smsk, sms_id, account_slug):

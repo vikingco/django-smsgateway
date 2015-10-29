@@ -10,6 +10,7 @@ LOCK_WAIT_TIMEOUT = getattr(settings, "SMSES_LOCK_WAIT_TIMEOUT", -1)
 
 logger = logging.getLogger(__name__)
 
+
 class Command(NoArgsCommand):
     help = 'Send SMSes in the queue. Defer the failed ones. Pass --send-deferred to retry those.'
 
@@ -26,7 +27,13 @@ class Command(NoArgsCommand):
             action='store',
             help='Whether to use a certain backend.'
         ),
+        make_option(
+            '--limit',
+            dest='limit',
+            action='store',
+            help='Limit the number of smses. Default is unlimited.'
+        ),
     )
 
     def handle_noargs(self, **options):
-        send_smses(options['send_deferred'], options['backend'])
+        send_smses(options['send_deferred'], options['backend'], options['limit'])
