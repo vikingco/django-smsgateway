@@ -5,7 +5,8 @@ from smsgateway.models import SMS
 
 
 class SMSFactory(factory.DjangoModelFactory):
-    FACTORY_FOR = SMS
+    class Meta:
+        model = SMS
 
     content = 'This is a test'
     sender = factory.Sequence(lambda n: u"+32476{0:06d}".format(n))
