@@ -25,10 +25,10 @@ def suite():
     if not os.environ.get('DJANGO_SETTINGS_MODULE', False):
         setup_django_settings()
     else:
-        from django.db.models.loading import load_app
+        from django.apps import apps
         from django.conf import settings
         settings.INSTALLED_APPS += ['smsgateway.tests',]
-        map(load_app, settings.INSTALLED_APPS)
+        map(apps.load_app, settings.INSTALLED_APPS)
 
     from smsgateway.tests import tasks
     from smsgateway.tests.backends import smpp, redistore
