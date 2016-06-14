@@ -18,6 +18,7 @@ try:
 except:
     raise ImproperlyConfigured('No SMSGATEWAY_HOOK defined.')
 
+
 class SMSBackend(object):
     def send(self, sms_request, account_dict):
         """
@@ -114,18 +115,18 @@ class SMSBackend(object):
         content = sms.content.upper().strip()
         content = re.sub('\s+', " ", content)
 
-
         for keyword, subkeywords in hook.iteritems():
             if content[:len(keyword)] == unicode(keyword):
                 subkeyword = content[len(keyword):].strip().split(u' ')[0].strip()
-                if not subkeyword in subkeywords:
+                if subkeyword not in subkeywords:
                     subkeyword = '*'
                 if subkeyword in subkeywords:
                     try:
                         callable_hook = get_callable(subkeywords[subkeyword])
                     except ImportError:
-                        raise ImproperlyConfigured(u'The function for %s was not found in the SMSGATEWAY_HOOK setting.' % subkeywords[subkeyword])
+                        raise ImproperlyConfigured(
+                            u'The function for {0} was not found in the SMSGATEWAY_HOOK setting.'.format(
+                                subkeywords[subkeyword]))
                     else:
                         return callable_hook(request, sms)
                 return None
-
