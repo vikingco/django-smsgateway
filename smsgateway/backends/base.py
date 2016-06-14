@@ -152,7 +152,13 @@ class SMSBackend(object):
         content = sms.content.upper().strip()
         content = re.sub('\s+', " ", content)
 
+        # Try to find the correct hook
         callable_name = self._find_callable(content, all_hooks)
+
+        # If no hook matched, check for a fallback
+        if not callable_name and hasattr(settings, 'SMSGATEWAY_FALLBACK_HOOK'):
+            callable_name = settings.SMSGATEWAY_FALLBACK_HOOK
+
         if not callable_name:
             return
 
