@@ -5,9 +5,9 @@ import os
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 
-ADMINS = (
+ADMINS = [
     # ('Your Name', 'your_email@domain.com'),
-)
+]
 
 MANAGERS = ADMINS
 
@@ -53,24 +53,24 @@ STATIC_URL = ''
 SECRET_KEY = 'vbtge3@fn!73i&1h)g=0&)*b*uc_4+&ury)x)8a*a+-f0fpxe5'
 
 # List of callables that know how to import templates from various sources.
-TEMPLATE_LOADERS = (
+TEMPLATE_LOADERS = [
     'django.template.loaders.filesystem.Loader',
     'django.template.loaders.app_directories.Loader',
-)
+]
 
-MIDDLEWARE_CLASSES = (
+MIDDLEWARE_CLASSES = [
     'django.middleware.common.CommonMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
-)
+]
 
 ROOT_URLCONF = 'smsgateway.tests.urls'
 
-TEMPLATE_DIRS = (
+TEMPLATE_DIRS = [
     # Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".
     # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.
     # os.path.join(os.path.dirname(__file__), "..", "templates"),
-)
+]
 
 INSTALLED_APPS = [
     'django.contrib.contenttypes',
