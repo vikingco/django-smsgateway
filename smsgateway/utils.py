@@ -49,19 +49,17 @@ def _match_keywords(content, hooks):
 
     # If nothing matched, see if there is a wildcard
     if not matched and '*' in hooks:
-        hook = hooks['*']
-        matched = True
+        return content
 
-    if matched:
-        # Split off the keyword
-        remaining_content = content.split(' ', 1)[1] if ' ' in content else ''
+    # Split off the keyword
+    remaining_content = content.split(' ', 1)[1] if ' ' in content else ''
 
-        # There are multiple subkeywords, recurse
-        if isinstance(hook, dict):
-            return _match_keywords(remaining_content, hook)
-        # This is the callable, we're done
-        else:
-            return remaining_content
+    # There are multiple subkeywords, recurse
+    if isinstance(hook, dict):
+        return _match_keywords(remaining_content, hook)
+    # This is the callable, we're done
+    else:
+        return remaining_content
 
 
 def parse_sms(content):
