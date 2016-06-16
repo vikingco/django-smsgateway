@@ -5,6 +5,7 @@ from django.conf import settings
 
 logger = logging.getLogger(__name__)
 
+
 def strspn(source, allowed):
     newchrs = []
     for c in source:
@@ -12,12 +13,14 @@ def strspn(source, allowed):
             newchrs.append(c)
     return u''.join(newchrs)
 
+
 def check_cell_phone_number(number):
     cleaned_number = strspn(number, u'0123456789')
     msisdn_prefix = getattr(settings, 'SMSGATEWAY_MSISDN_PREFIX', '')
     if msisdn_prefix and not cleaned_number.startswith(msisdn_prefix):
         cleaned_number = msisdn_prefix + cleaned_number
     return str(cleaned_number)
+
 
 def truncate_sms(text, max_length=160):
     text = text.strip()
@@ -27,25 +30,51 @@ def truncate_sms(text, max_length=160):
         logger.error("Trying to send an SMS that is too long: %s", text)
         return text[:max_length-3] + '...'
 
-def parse_sms(content):
 
+def _match_keywords(content, hooks):
+    """
+    Helper function for matching a message to the hooks. Called recursively.
+
+    :param str content: the (remaining) content to parse
+    :param dict hooks: the hooks to try
+    :returns str: the message without the keywords
+    """
+    # Go throught the different hooks
+    matched = False
+    for keyword, hook in hooks.iteritems():
+        # If the keyword of this hook matches
+        if content.startswith(keyword + ' ') or keyword == content:
+            matched = True
+            break
+
+    # If nothing matched, see if there is a wildcard
+    if not matched and '*' in hooks:
+        hook = hooks['*']
+        matched = True
+
+    if matched:
+        # Split off the keyword
+        remaining_content = content.split(' ', 1)[1] if ' ' in content else ''
+
+        # There are multiple subkeywords, recurse
+        if isinstance(hook, dict):
+            return _match_keywords(remaining_content, hook)
+        # This is the callable, we're done
+        else:
+            return remaining_content
+
+
+def parse_sms(content):
+    """
+    Parse an sms message according to the hooks defined in the settings.
+
+    :param str content: the message to parse
+    :returns list: the message without keywords, split into words
+    """
     # work with uppercase and single spaces
     content = content.upper().strip()
     content = re.sub('\s+', " ", content)
 
-    from smsgateway.backends.base import hook
-    for keyword, subkeywords in hook.iteritems():
-        if content[:len(keyword)] == unicode(keyword):
-            remainder = content[len(keyword):].strip()
-            if '*' in subkeywords:
-                parts = remainder.split(u' ')
-                subkeyword = parts[0].strip()
-                if subkeyword in subkeywords:
-                    return [keyword] + parts
-                return keyword, remainder
-            else:
-                for subkeyword in subkeywords:
-                    if remainder[:len(subkeyword)] == unicode(subkeyword):
-                        subremainder = remainder[len(subkeyword):].strip()
-                        return [keyword, subkeyword] + subremainder.split()
-    return None
+    from smsgateway.backends.base import all_hooks
+    content = _match_keywords(content, all_hooks)
+    return content.split(' ')

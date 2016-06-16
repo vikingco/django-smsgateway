@@ -14,9 +14,10 @@ from smsgateway.sms import SMSRequest
 logger = logging.getLogger(__name__)
 
 try:
-    hook = settings.SMSGATEWAY_HOOK
+    all_hooks = settings.SMSGATEWAY_HOOK
 except:
     raise ImproperlyConfigured('No SMSGATEWAY_HOOK defined.')
+
 
 class SMSBackend(object):
     def send(self, sms_request, account_dict):
@@ -103,29 +104,63 @@ class SMSBackend(object):
         """
         raise NotImplementedError
 
+    def _find_callable(self, content, hooks):
+        """
+        Parse the content of an sms according, and try to match it with a callable function defined in the settings.
+
+        This function calls itself to dig through the hooks, because they can have an arbitrary depth.
+
+        :param str content: the content of the sms to parse
+        :param dict hooks: the hooks to match
+        :returns str or None: the name of the function to call, or None if no function was matched
+        """
+        # Go throught the different hooks
+        matched = False
+        for keyword, hook in hooks.iteritems():
+            # If the keyword of this hook matches
+            if content.startswith(keyword + ' ') or content == keyword:
+                matched = True
+                break
+
+        # If nothing matched, see whether there is a wildcard
+        if not matched and '*' in hooks:
+            hook = hooks['*']
+            matched = True
+
+        if matched:
+            # Take off the first word
+            remaining_content = content.split(' ', 1)[1] if ' ' in content else ''
+
+            # There are multiple subkeywords, recurse
+            if isinstance(hook, dict):
+                return self._find_callable(remaining_content, hook)
+            # This is the callable
+            else:
+                return hook
+
     def process_incoming(self, request, sms):
         """
         Process an incoming SMS message and call the correct hook.
-        """
 
+        :param Request request: the request we're handling. Passed to the handler
+        :param SMS sms: the sms we're processing
+        :returns: the result of the callable function, or None if nothing was called
+        """
         sms.save()
 
         # work with uppercase and single spaces
         content = sms.content.upper().strip()
         content = re.sub('\s+', " ", content)
 
+        # Try to find the correct hook
+        callable_name = self._find_callable(content, all_hooks)
 
-        for keyword, subkeywords in hook.iteritems():
-            if content[:len(keyword)] == unicode(keyword):
-                subkeyword = content[len(keyword):].strip().split(u' ')[0].strip()
-                if not subkeyword in subkeywords:
-                    subkeyword = '*'
-                if subkeyword in subkeywords:
-                    try:
-                        callable_hook = get_callable(subkeywords[subkeyword])
-                    except ImportError:
-                        raise ImproperlyConfigured(u'The function for %s was not found in the SMSGATEWAY_HOOK setting.' % subkeywords[subkeyword])
-                    else:
-                        return callable_hook(request, sms)
-                return None
+        # If no hook matched, check for a fallback
+        if not callable_name and hasattr(settings, 'SMSGATEWAY_FALLBACK_HOOK'):
+            callable_name = settings.SMSGATEWAY_FALLBACK_HOOK
 
+        if not callable_name:
+            return
+
+        callable_function = get_callable(callable_name)
+        return callable_function(request, sms)
