@@ -1,4 +1,4 @@
-__version__ = '2.0.0'
+__version__ = '2.0.4'
 
 def get_account(using=None):
     from django.conf import settings
