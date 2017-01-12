@@ -17,7 +17,7 @@ class SMS(models.Model):
     operator = models.IntegerField(choices=OPERATOR_CHOICES, default=OPERATOR_UNKNOWN, verbose_name=_(u'Originating operator'))
     gateway = models.IntegerField(choices=GATEWAY_CHOICES, default=0, verbose_name=_(u'gateway'), help_text=_(u'By which provider the SMS was handled.'))
     backend = models.CharField(max_length=32, db_index=True, default='unknown', verbose_name=_(u'backend'))
-    gateway_ref = models.CharField(max_length=32, blank=True, verbose_name=_(u'gateway reference'), help_text=_(u'A reference id for the gateway'))
+    gateway_ref = models.CharField(max_length=64, blank=True, verbose_name=_(u'gateway reference'), help_text=_(u'A reference id for the gateway'))
     direction = models.IntegerField(choices=DIRECTION_CHOICES, default=DIRECTION_INBOUND, verbose_name=_(u'direction'))
 
     class Meta:

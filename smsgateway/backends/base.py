@@ -27,7 +27,7 @@ class SMSBackend(object):
         """
         capacity = self.get_url_capacity()
         sender = u'[%s]' % self.get_slug() if not sms_request.signature else sms_request.signature
-        reference = datetime.datetime.now().strftime('%Y%m%d%H%M%S') + u''.join(sms_request.to[:1])
+        reference = self.get_send_reference(sms_request)
         all_succeeded = True
 
         # Split SMSes into batches depending on the capacity
@@ -69,7 +69,7 @@ class SMSBackend(object):
                         to=dest,
                         backend=self.get_slug(),
                         direction=DIRECTION_OUTBOUND,
-                        gateway_ref=reference
+                        gateway_ref=self.get_gateway_ref(reference, result)
                     )
 
         return all_succeeded
@@ -103,6 +103,18 @@ class SMSBackend(object):
         A unique short identifier for the SMS gateway provider.
         """
         raise NotImplementedError
+
+    def get_send_reference(self, sms_request):
+        """
+        Generate a reference for the send sms
+        """
+        return datetime.datetime.now().strftime('%Y%m%d%H%M%S') + u''.join(sms_request.to[:1])
+
+    def get_gateway_ref(self, reference, result=None):
+        """
+        Retrieve the gateway_ref, defaults to `reference`
+        """
+        return reference
 
     def _find_callable(self, content, hooks):
         """
