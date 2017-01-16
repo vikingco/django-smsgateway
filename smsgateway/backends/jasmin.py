@@ -21,7 +21,7 @@ class JasminBackend(SMSBackend):
         querystring = urlencode({
             'username': account_dict['username'],
             'password': account_dict['password'],
-            'from': sms_request.signature,
+            'from': account_dict['signature'],
             'to': sms_request.to[0],
             'content': msg,
             'coding': 3,  # latin-1
