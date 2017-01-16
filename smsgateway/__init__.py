@@ -1,4 +1,5 @@
-__version__ = '2.0.4'
+__version__ = '2.1.0'
+
 
 def get_account(using=None):
     from django.conf import settings
@@ -7,6 +8,7 @@ def get_account(using=None):
         return accounts[using]
     else:
         return accounts[accounts['__default__']]
+
 
 def send(to, msg, signature, using=None, reliable=False):
     """
@@ -29,6 +31,7 @@ def send(to, msg, signature, using=None, reliable=False):
     backend = get_backend(account_dict['backend'])
     sms_request = SMSRequest(to, msg, signature, reliable=reliable)
     return backend.send(sms_request, account_dict)
+
 
 def send_queued(to, msg, signature, using=None, reliable=False, priority=None):
     """

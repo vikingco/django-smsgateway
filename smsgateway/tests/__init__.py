@@ -16,8 +16,8 @@ def run_tests():
     from django.conf import settings
     from django.test.utils import get_runner
 
-    TestRunner = get_runner(settings)
-    test_suite = TestRunner(verbosity=2, interactive=True, failfast=False)
+    testrunner = get_runner(settings)
+    test_suite = testrunner(verbosity=2, interactive=True, failfast=False)
     test_suite.run_tests(['smsgateway'])
 
 
@@ -27,7 +27,7 @@ def suite():
     else:
         from django.apps import apps
         from django.conf import settings
-        settings.INSTALLED_APPS += ['smsgateway.tests',]
+        settings.INSTALLED_APPS += ['smsgateway.tests']
         map(apps.load_app, settings.INSTALLED_APPS)
 
     from smsgateway.tests import tasks

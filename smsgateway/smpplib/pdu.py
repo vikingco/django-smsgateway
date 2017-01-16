@@ -23,7 +23,6 @@
 """PDU module"""
 
 import struct
-import binascii
 
 #
 # SMPP error codes:
@@ -96,7 +95,7 @@ descs = {
     SMPP_ESME_RINVMSGID: 'Invalid Message ID',
     SMPP_ESME_RBINDFAIL: 'Bind Failed',
     SMPP_ESME_RINVPASWD: 'Invalid Password',
-    SMPP_ESME_RINVSYSID : 'Invalid System ID',
+    SMPP_ESME_RINVSYSID: 'Invalid System ID',
     SMPP_ESME_RCANCELFAIL: 'Cancel SM Failed',
     SMPP_ESME_RREPLACEFAIL: 'Replace SM Failed',
     SMPP_ESME_RMSGQFUL: 'Message Queue is full',
@@ -114,8 +113,8 @@ descs = {
     SMPP_ESME_RINVDSTNPI: 'Invalid Destination address NPI',
     SMPP_ESME_RINVSYSTYP: 'Invalid system_type field',
     SMPP_ESME_RINVREPFLAG: 'Invalid replace_if_present flag',
-    SMPP_ESME_RINVNUMMSGS : 'Invalid number of messages',
-    SMPP_ESME_RTHROTTLED: 'Throttling error (ESME has exceeded allowed ' \
+    SMPP_ESME_RINVNUMMSGS: 'Invalid number of messages',
+    SMPP_ESME_RTHROTTLED: 'Throttling error (ESME has exceeded allowed '
                           'message limits)',
     SMPP_ESME_RINVSCHED: 'Invalid Scheduled Delivery Time',
     SMPP_ESME_RINVEXPIRY: 'Invalid message validity period (Expiry Time)',
@@ -142,47 +141,46 @@ def factory(command_name, **args):
 
     import command
 
-    CommandClass = None
+    cc = None
 
     if command_name == 'bind_transmitter':
-        CommandClass = command.BindTransmitter
+        cc = command.BindTransmitter
     elif command_name == 'bind_transmitter_resp':
-        CommandClass = command.BindTransmitterResp
+        cc = command.BindTransmitterResp
     if command_name == 'bind_receiver':
-        CommandClass = command.BindReceiver
+        cc = command.BindReceiver
     elif command_name == 'bind_receiver_resp':
-        CommandClass = command.BindReceiverResp
+        cc = command.BindReceiverResp
     if command_name == 'bind_transceiver':
-        CommandClass = command.BindTransceiver
+        cc = command.BindTransceiver
     elif command_name == 'bind_transceiver_resp':
-        CommandClass = command.BindTransceiverResp
+        cc = command.BindTransceiverResp
     elif command_name == 'data_sm':
-        CommandClass = command.DataSM
+        cc = command.DataSM
     elif command_name == 'data_sm_resp':
-        CommandClass = command.DataSMResp
+        cc = command.DataSMResp
     elif command_name == 'generic_nack':
-        CommandClass = command.GenericNAck
+        cc = command.GenericNAck
     elif command_name == 'submit_sm':
-        CommandClass = command.SubmitSM
+        cc = command.SubmitSM
     elif command_name == 'submit_sm_resp':
-        CommandClass = command.SubmitSMResp
+        cc = command.SubmitSMResp
     elif command_name == 'deliver_sm':
-        CommandClass = command.DeliverSM
+        cc = command.DeliverSM
     elif command_name == 'deliver_sm_resp':
-        CommandClass = command.DeliverSMResp
+        cc = command.DeliverSMResp
     elif command_name == 'unbind':
-        CommandClass = command.Unbind
+        cc = command.Unbind
     elif command_name == 'unbind_resp':
-        CommandClass = command.UnbindResp
+        cc = command.UnbindResp
     elif command_name == 'enquire_link':
-        CommandClass = command.EnquireLink
+        cc = command.EnquireLink
     elif command_name == 'enquire_link_resp':
-        CommandClass = command.EnquireLinkResp
-    if not CommandClass:
+        cc = command.EnquireLinkResp
+    if not cc:
         raise ValueError("Command '%s' is not supported" % command_name)
 
-    return CommandClass(command_name, **(args))
-
+    return cc(command_name, **(args))
 
 
 class PDU:
@@ -192,12 +190,10 @@ class PDU:
     command = None
     status = None
 
-
     def __init__(self, **args):
 
         self.__dict__.update(**(args))
-    
-    
+
     def get_sequence(self):
         """Return global sequence number"""
 
@@ -207,18 +203,15 @@ class PDU:
 
     sequence = property(get_sequence)
 
-
     def is_vendor(self):
         """Return True if this is a vendor PDU, False otherwise"""
 
         return hasattr(self, 'vendor')
 
-
     def is_request(self):
         """Return True if this is a request PDU, False otherwise"""
 
         return not self.is_response()
-
 
     def is_response(self):
         """Return True if this is a response PDU, False otherwise"""
@@ -229,7 +222,6 @@ class PDU:
 
         return False
 
-
     def is_error(self):
         """Return True if this is an error response, False otherwise"""
 
@@ -237,7 +229,6 @@ class PDU:
             return True
 
         return False
-
 
     def get_status_desc(self, status=None):
         """Return status description"""
@@ -251,7 +242,6 @@ class PDU:
             return "Description for status 0x%x not found!" % status
 
         return desc
-
 
     def parse(self, data):
         """Parse raw PDU"""
@@ -289,26 +279,23 @@ class PDU:
 
         return command.get_command_name(code)
 
-
     def _unpack(self, format, data):
         """Unpack values. Uses struct.unpack. TODO: remove this"""
 
         return struct.unpack(format, data)
 
-
     def generate(self):
         """Generate raw PDU"""
-       
+
         body = self.generate_params()
-        
+
         self._length = len(body) + 16
 
         import command
-        
+
         command_code = command.get_command_code(self.command)
 
         header = struct.pack(">LLLL", self._length, command_code,
                              self.status, self.sequence)
 
         return header + body
-

@@ -4,6 +4,7 @@ from django.http import HttpResponse
 
 from smsgateway.backends.base import SMSBackend
 
+
 class FileBackend(SMSBackend):
     """
     Backend for debugging purposes. Writes all SMSes to a file.

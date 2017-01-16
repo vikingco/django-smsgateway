@@ -1,50 +1,50 @@
 from setuptools import setup, find_packages
-from setuptools.command.test import test
-import smsgateway
-import subprocess
+from pip.req import parse_requirements
+from pip.download import PipSession
+
 import os
+import smsgateway
 
 
-def run_tests(*args):
-    SMPPSIM_DIR = os.path.join(os.path.abspath(os.path.curdir),
-                               'tests/SMPPSim')
-    print "Launch SMPPSim service for testing... ",
-    subprocess.Popen(['/bin/sh', os.path.join(SMPPSIM_DIR, 'do_start.sh')],
-                     stdout=open('/dev/null', 'w'), 
-                     stderr=subprocess.STDOUT,
-                     cwd=SMPPSIM_DIR).wait()
-    if os.path.exists(os.path.join(SMPPSIM_DIR, 'service.pid')):
-        print 'Ok'
-    else: print 'failed!'
-    subprocess.Popen(['python', 'tests/runtests.py']).wait()
-    print "Stopping SMPPSim service... ",
-    subprocess.Popen(['/bin/sh', os.path.join(SMPPSIM_DIR, 'do_stop.sh')],
-                     cwd=SMPPSIM_DIR).wait()
-    if os.path.exists(os.path.join(SMPPSIM_DIR, 'service.pid')):
-        print 'failed!'
-    else: print 'Ok'
-test.run_tests = run_tests
+# Lists of requirements and dependency links which are needed during runtime, testing and setup
+install_requires = []
+tests_require = []
+dependency_links = []
+
+# Inject test requirements from requirements_test.txt into setup.py
+requirements_file = parse_requirements(os.path.join('deployment', 'requirements.txt'), session=PipSession())
+for req in requirements_file:
+    install_requires.append(str(req.req))
+    if req.link:
+        dependency_links.append(str(req.link))
+
+# Inject test requirements from requirements_test.txt into setup.py
+requirements_test_file = parse_requirements(os.path.join('deployment', 'requirements_test.txt'), session=PipSession())
+for req in requirements_test_file:
+    tests_require.append(str(req.req))
+    if req.link:
+        dependency_links.append(str(req.link))
 
 
 setup(
-    name="django-smsgateway",
+    name='smsgateway',
     version=smsgateway.__version__,
-    url='https://github.com/citylive/django-smsgateway',
-    license='BSD',
-    description="SMS gateway for sending text messages",
+    url='https://github.com/vikingco/smsgateway',
+    license='commercial',
+    description='SMS gateway for sending text messages',
     long_description=open('README.rst', 'r').read(),
-    author='Jef Geskens, City Live nv',
+    author='VikingCo NV/Medialaan',
     packages=find_packages('.'),
-    package_data={'smsgateway': [
-                'templates/*.html', 'templates/*/*.html', 'templates/*/*/*.html',
-                'locale/*/LC_MESSAGES/*.mo', 'locale/*/LC_MESSAGES/*.po',
-                ], },
+    include_package_data=True,
+    zip_safe=False,  # Don't create egg files, Django cannot find templates in egg files.
+    install_requires=install_requires,
+    setup_requires=['pytest-runner', ],
+    tests_require=tests_require,
+    dependency_links=dependency_links,
     classifiers=[
-        'Intended Audience :: Developers',
         'Programming Language :: Python',
         'Operating System :: OS Independent',
         'Environment :: Web Environment',
         'Framework :: Django',
     ],
-    test_suite = 'dummy'
 )

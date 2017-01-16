@@ -9,6 +9,7 @@ from smsgateway.models import SMS
 from smsgateway.backends.base import SMSBackend
 from smsgateway.utils import check_cell_phone_number
 
+
 class MobileWebBackend(SMSBackend):
     def get_send_url(self, sms_request, account_dict):
         # Encode message
@@ -34,7 +35,7 @@ class MobileWebBackend(SMSBackend):
         request_dict = request.POST if request.method == 'POST' else request.GET
 
         # Check whether we've gotten a SendDateTime
-        if not 'SendDateTime' in request_dict:
+        if 'SendDateTime' not in request_dict:
             return HttpResponse('')
 
         # Check whether we've already received this message

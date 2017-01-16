@@ -1,5 +1,3 @@
-#-*- coding: utf-8 -*-
-
 import os
 
 PRJ_PATH = os.path.abspath(os.path.curdir)
@@ -18,9 +16,9 @@ DATABASES = {
     'default': {
         'ENGINE':   "django.db.backends.sqlite3",
         'NAME':     "redistore_demo.db",
-        'USER':     "", 
-        'PASSWORD': "", 
-        'HOST':     "", 
+        'USER':     "",
+        'PASSWORD': "",
+        'HOST':     "",
         'PORT':     "",
     }
 }
@@ -74,7 +72,6 @@ STATICFILES_DIRS = (
 STATICFILES_FINDERS = (
     'django.contrib.staticfiles.finders.FileSystemFinder',
     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
-#    'django.contrib.staticfiles.finders.DefaultStorageFinder',
 )
 
 SECRET_KEY = "vbtge3@fn!73i&1h)g=0&)*b*uc_4+&ury)x)8a*a+-f0fpxe5"
@@ -127,7 +124,7 @@ LOGGING = {
         'console': {
             'level': 'INFO',
             'class': 'logging.StreamHandler',
-            'formatter': 'simple' 
+            'formatter': 'simple'
         }
     },
     'loggers': {
@@ -154,7 +151,7 @@ SMSGATEWAY_ACCOUNTS = {
         'pwd': None,
         'key_prefix': 'kpn:',
         'reply_signature': 'Mobile Vikings'
-    } 
+    }
 }
 
 # When there are problems with the MobileWeb incoming urls, call 02 247 37 27

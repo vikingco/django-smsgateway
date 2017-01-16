@@ -59,22 +59,15 @@ def next_seq():
 
 
 def get_instance():
-    """Return SMPP class instance. Singleton design pattern -- let only one
-    instance exist"""
+    """Return SMPP class instance. Singleton design pattern -- let only one instance exist"""
 
     global smpp_instance
 
     if smpp_instance is None:
         smpp_instance = smpp_instance
-# TODO FIXXXXX
 
     return smpp_instance
 
 
-#
-# Exceptions
-#
-
 class UnknownCommandError(Exception):
     """Raised when unknown command ID is received"""
-

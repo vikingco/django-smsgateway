@@ -3,6 +3,7 @@ from django.utils.http import urlencode
 
 from smsgateway.backends.base import SMSBackend
 
+
 class SmsExtraProBackend(SMSBackend):
     def get_send_url(self, sms_request, account_dict):
         # Set signature

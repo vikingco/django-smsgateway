@@ -11,5 +11,6 @@ for entry in backends:
     instance = backend_class()
     REGISTRY[instance.get_slug()] = instance
 
+
 def get_backend(slug):
     return REGISTRY.get(slug, None)

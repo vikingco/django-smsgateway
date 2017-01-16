@@ -20,7 +20,7 @@
 # Modified by Yusuf Kaka <yusufk at gmail>
 # Added support for Optional TLV's
 
-import smpp
-import pdu
-import command
-import client
+import smpp  # nopep8
+import pdu  # nopep8
+import command  # nopep8
+import client  # nopep8

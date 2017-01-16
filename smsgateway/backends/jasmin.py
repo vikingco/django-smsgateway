@@ -8,6 +8,7 @@ from smsgateway.models import SMS
 from smsgateway.backends.base import SMSBackend
 from smsgateway.utils import check_cell_phone_number
 
+
 class JasminBackend(SMSBackend):
     def get_send_url(self, sms_request, account_dict):
         # Encode message
@@ -23,7 +24,7 @@ class JasminBackend(SMSBackend):
             'from': sms_request.signature,
             'to': sms_request.to[0],
             'content': msg,
-            'coding': 3, # latin-1
+            'coding': 3,  # latin-1
         })
         return u'%s?%s' % (account_dict['url'], querystring)
 
@@ -38,7 +39,7 @@ class JasminBackend(SMSBackend):
         request_dict = request.POST if request.method == 'POST' else request.GET
 
         # Check whether we've got an id
-        if not 'id' in request_dict:
+        if 'id' not in request_dict:
             return HttpResponse('')
 
         # Check whether we've already received this message

@@ -1,4 +1,0 @@
-redis
-hiredis
-celery
-lockfile==0.9.1

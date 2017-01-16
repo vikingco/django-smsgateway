@@ -1,5 +1,6 @@
 from smsgateway.utils import check_cell_phone_number, truncate_sms
 
+
 class SMSRequest(object):
     def __init__(self, to, msg, signature, reliable=False, reference=None):
         """
@@ -15,4 +16,3 @@ class SMSRequest(object):
         self.signature = signature[:16] if signature[1:].isdigit() else signature[:11]
         self.reliable = reliable
         self.reference = reference
-

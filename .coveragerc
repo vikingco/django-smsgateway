@@ -1,0 +1,19 @@
+[run]
+branch = True
+omit =
+    # Ignore migrations
+    *migrations*
+
+    # Ignore deployment files
+    deployment/*
+
+    # Ignore docs
+    docs*
+
+    *admin.py
+
+    # Ignore settings files
+    settings_test.py
+
+    # Ignore url files
+    urls.py

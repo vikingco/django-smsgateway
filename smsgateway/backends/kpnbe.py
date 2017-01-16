@@ -7,6 +7,7 @@ from gargoyle import gargoyle
 
 from smsgateway.backends.base import SMSBackend
 
+
 class KPNBEBackend(SMSBackend):
     def get_slug(self):
         return 'kpnbe'

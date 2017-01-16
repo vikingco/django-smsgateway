@@ -23,7 +23,6 @@
 """SMPP Commands module"""
 
 import struct
-import binascii
 
 import smpp
 import pdu
@@ -91,16 +90,17 @@ SMPP_LANG_DE = 0x04
 SMPP_MSGMODE_DEFAULT = 0x00  # Default SMSC mode (e.g. Store and Forward)
 SMPP_MSGMODE_DATAGRAM = 0x01  # Datagram mode
 SMPP_MSGMODE_FORWARD = 0x02  # Forward (i.e. Transaction) mode
-SMPP_MSGMODE_STOREFORWARD = 0x03  # Store and Forward mode (use this to
-                                  # select Store and Forward mode if Default
-                                  # mode is not Store and Forward)
+# Store and Forward mode (use this to
+# select Store and Forward mode if Default
+# mode is not Store and Forward)
+SMPP_MSGMODE_STOREFORWARD = 0x03
 
 
 SMPP_MSGTYPE_DEFAULT = 0x00  # Default message type (i.e. normal message)
-SMPP_MSGTYPE_DELIVERYACK = 0x08  # Message containts ESME Delivery
-                                 # Acknowledgement
-SMPP_MSGTYPE_USERACK = 0x10  # Message containts ESME Manual/User
-                             # Acknowledgement
+# Message containts ESME Delivery Acknowledgement
+SMPP_MSGTYPE_DELIVERYACK = 0x08
+# Message containts ESME Manual/User Acknowledgement
+SMPP_MSGTYPE_USERACK = 0x10
 
 SMPP_GSMFEAT_NONE = 0x00  # No specific features selected
 SMPP_GSMFEAT_UDHI = 0x40  # UDHI Indicator (only relevant for MT msgs)
@@ -110,17 +110,17 @@ SMPP_GSMFEAT_UDHIREPLYPATH = 0xC0  # Set UDHI and Reply Path (for GSM net)
 #
 # SMPP Protocol ID
 #
-SMPP_PID_DEFAULT = 0x00 #Default
-SMPP_PID_RIP= 0x41    #Replace if present on handset
+SMPP_PID_DEFAULT = 0x00  # Default
+SMPP_PID_RIP = 0x41    # Replace if present on handset
 
 #
 # SMPP User Data Header Information Element Identifier
 #
-SMPP_UDHIEIE_CONCATENATED = 0x00 #Concatenated short message, 8-bit ref
-SMPP_UDHIEIE_SPECIAL = 0x01 #
-SMPP_UDHIEIE_RESERVED = 0x02 #
-SMPP_UDHIEIE_PORT8 = 0x04 #
-SMPP_UDHIEIE_PORT16 = 0x04 #
+SMPP_UDHIEIE_CONCATENATED = 0x00  # Concatenated short message, 8-bit ref
+SMPP_UDHIEIE_SPECIAL = 0x01
+SMPP_UDHIEIE_RESERVED = 0x02
+SMPP_UDHIEIE_PORT8 = 0x04
+SMPP_UDHIEIE_PORT16 = 0x04
 #
 # SMPP protocol versions
 #
@@ -189,7 +189,7 @@ optional_params = {
     'language_indicator': 0x020D,
     'sar_total_segments': 0x020E,
     'sar_segment_seqnum': 0x020F,
-    'sc_interface_version': 0x0210,#0x1002,
+    'sc_interface_version': 0x0210,
     'callback_num_pres_ind': 0x0302,
     'callback_num_atag': 0x0303,
     'number_of_messages': 0x0304,
@@ -219,7 +219,7 @@ def get_command_name(code):
     try:
         return commands.keys()[commands.values().index(code)]
     except ValueError:
-        raise smpp.UnknownCommandError("Unknown SMPP command code " \
+        raise smpp.UnknownCommandError("Unknown SMPP command code "
                                        "'0x%x'" % code)
 
 
@@ -230,8 +230,8 @@ def get_command_code(name):
     try:
         return commands[name]
     except KeyError:
-        raise smpp.UnknownCommandError("Unknown SMPP command name '%s'" \
-            % name)
+        raise smpp.UnknownCommandError("Unknown SMPP command name '%s'" % name)
+
 
 def get_optional_name(code):
     """Return optional_params name by given code. If code is unknown, raise
@@ -240,7 +240,7 @@ def get_optional_name(code):
     try:
         return optional_params.keys()[optional_params.values().index(code)]
     except ValueError:
-        raise smpp.UnknownCommandError("Unknown SMPP command code " \
+        raise smpp.UnknownCommandError("Unknown SMPP command code "
                                        "'0x%x'" % code)
 
 
@@ -251,19 +251,16 @@ def get_optional_code(name):
     try:
         return optional_params[name]
     except KeyError:
-        raise smpp.UnknownCommandError("Unknown SMPP command name '%s'" \
-            % name)
-        
+        raise smpp.UnknownCommandError("Unknown SMPP command name '%s'" % name)
+
+
 class Command(pdu.PDU):
     """SMPP PDU Command class"""
 
     params = {}
 
-
     def __init__(self, command, **args):
         """Initialize"""
-
-        #pdu.PDU.__init__(self, **(args))
 
         self.command = command
         if args.get('sequence') is None:
@@ -271,25 +268,16 @@ class Command(pdu.PDU):
 
         self.status = pdu.SMPP_ESME_ROK
 
-        #if self.is_vendor() and self.vdefs:
-        #    self.defs = self.defs + self.vdefs
-
-        #self.__dict__.update(**(args))
         self._set_vars(**(args))
 
-
     def _print_dict(self):
-
-        print '\n'.join([' -> '.join([str(key), str(value)]) for key, value in \
-            self.__dict__.items()])
-
+        pass
 
     def _set_vars(self, **args):
 
         for key, value in args.items():
             if not hasattr(self, key) or getattr(self, key) is None:
                 setattr(self, key, value)
-
 
     def generate_params(self):
         """Generate binary data from the object"""
@@ -300,19 +288,20 @@ class Command(pdu.PDU):
         body = ''
 
         for field in self.params_order:
-            #print field
             param = self.params[field]
-            #print param
             if self.field_is_optional(field):
                 if param.type is int:
                     value = self._generate_int_tlv(field)
-                    if value: body += value
+                    if value:
+                        body += value
                 elif param.type is str:
                     value = self._generate_string_tlv(field)
-                    if value: body += value
+                    if value:
+                        body += value
                 elif param.type is ostr:
                     value = self._generate_ostring_tlv(field)
-                    if value: body += value
+                    if value:
+                        body += value
             else:
                 if param.type is int:
                     value = self._generate_int(field)
@@ -322,27 +311,25 @@ class Command(pdu.PDU):
                     body += value
                 elif param.type is ostr:
                     value = self._generate_ostring(field)
-                    if value: body += value
-            #print value
+                    if value:
+                        body += value
         return body
 
-        
     def _generate_opt_header(self, field):
         """Generate a header for an optional parameter"""
 
         raise NotImplementedError('Vendors not supported')
 
-
     def _generate_int(self, field):
         """Generate integer value"""
 
-        format = self._pack_format(field)
+        fmt = self._pack_format(field)
         data = getattr(self, field)
         if data:
-            return struct.pack(format, data)
+            return struct.pack(fmt, data)
         else:
             return chr(0)  # null terminator
-        
+
     def _generate_string(self, field):
         """Generate string value"""
 
@@ -363,38 +350,36 @@ class Command(pdu.PDU):
         setattr(self, field, field_value)
         return value
 
-
     def _generate_ostring(self, field):
         """Generate octet string value (no null terminator)"""
 
         value = getattr(self, field)
         if value:
             return value
-        else: return None #chr(0)
-        
+        else:
+            return None
+
     def _generate_int_tlv(self, field):
         """Generate integer value"""
-        format = self._pack_format(field)
+        fmt = self._pack_format(field)
         data = getattr(self, field)
         field_code = get_optional_code(field)
         field_length = self.params[field].size
         value = None
         if data:
-            value = struct.pack(">HH"+format, field_code,field_length,data)
-            #print binascii.b2a_hex(value)
+            value = struct.pack(">HH"+fmt, field_code, field_length, data)
         return value
-
 
     def _generate_string_tlv(self, field):
         """Generate string value"""
 
         field_value = getattr(self, field)
         field_code = get_optional_code(field)
-        
+
         if hasattr(self.params[field], 'size'):
             size = self.params[field].size
             fvalue = field_value.ljust(size, chr(0))
-            value = struct.pack(">HH", field_code,size)+fvalue
+            value = struct.pack(">HH", field_code, size)+fvalue
         elif hasattr(self.params[field], 'max'):
             if len(field_value or '') > self.params[field].max:
                 field_value = field_value[0:self.params[field].max-1]
@@ -403,28 +388,23 @@ class Command(pdu.PDU):
                 field_length = len(field_value)
                 fvalue = field_value + chr(0)
                 value = struct.pack(">HH", field_code, field_length)+fvalue
-                #print binascii.b2a_hex(value)
             else:
-                value = None #chr(0)
-        #setattr(self, field, field_value)
+                value = None  # chr(0)
         return value
-
 
     def _generate_ostring_tlv(self, field):
         """Generate octet string value (no null terminator)"""
         try:
             field_value = getattr(self, field)
-        except: 
+        except:
             return None
         field_code = get_optional_code(field)
-        
+
         value = None
         if field_value:
             field_length = len(field_value)
-            value = struct.pack(">HH",field_code, field_length) + field_value
-            #print binascii.b2a_hex(value)
+            value = struct.pack(">HH", field_code, field_length) + field_value
         return value
-
 
     def _pack_format(self, field):
         """Return format type"""
@@ -436,7 +416,6 @@ class Command(pdu.PDU):
         elif self.params[field].size == 3:
             return 'L'
         return None
-
 
     def _parse_int(self, field, data, pos):
         """Parse fixed-length chunk from a PDU.
@@ -452,7 +431,6 @@ class Command(pdu.PDU):
 
         return data, pos
 
-
     def _parse_string(self, field, data, pos):
         """Parse variable-length string from a PDU.
         Return (data, pos) tuple."""
@@ -466,30 +444,26 @@ class Command(pdu.PDU):
 
         return data, pos
 
-
     def _parse_ostring(self, field, data, pos, length=None):
         """Parse an octet string from a PDU.
         Return (data, pos) tuple."""
-        
+
         if length is None:
             length_field = self.params[field].len_field
             length = int(getattr(self, length_field))
-            #print length_field, type(length_field), length, type(length_field)
 
         setattr(self, field, data[pos:pos+length])
         pos += length
 
         return data, pos
 
-
     def is_fixed(self, field):
         """Return True if field has fixed length, False otherwise"""
-        
+
         if hasattr(self.params[field], 'size'):
             return True
 
         return False
-        
 
     def parse_params(self, data):
         """Parse data into the object structure"""
@@ -508,48 +482,25 @@ class Command(pdu.PDU):
                 data, pos = self._parse_string(field, data, pos)
             elif param.type is ostr:
                 data, pos = self._parse_ostring(field, data, pos)
-        #print pos,field,data
         if pos < dlen:
-            #None
             self.parse_optional_params(data[pos:])
-
 
     def parse_optional_params(self, data):
         """Parse optional parameters.
-        
+
         Optional parameters have the following format:
             * type (2 bytes)
             * length (2 bytes)
             * value (variable, <length> bytes)
         """
-
-        #print binascii.b2a_hex(data)
-        #print len(data)
-        dlen = len(data)#-4
+        dlen = len(data)
         pos = 0
-        
-        while pos < dlen:
-            #print pos
-            #unpacked_data1,unpacked_data2 = struct.unpack('2B', data[pos:pos+2]) 
-            #pack = struct.pack(unpacked_data2,unpacked_data1)
-            #unpacked_data = struct.unpack('H', pack) 
-            unpacked_data = struct.unpack('>H', data[pos:pos+2]) 
-            type_code = int(''.join(map(str, unpacked_data)))
-            
-            #print type_code
-            #field=None
-            field = get_optional_name(type_code)
-            #try:
-            #    field = \
-            #        optional_params.keys()[\
-            #            optional_params.values().index(type_code)]
-                
-            #except ValueError:
-            #    raise ValueError("Type '0x%x' not found" % type_code)
-                #print ("Type '0x%x' not found" % type_code)
-           
 
-            #if field != None:
+        while pos < dlen:
+            unpacked_data = struct.unpack('>H', data[pos:pos+2])
+            type_code = int(''.join(map(str, unpacked_data)))
+
+            field = get_optional_name(type_code)
             pos += 2
 
             length = int(''.join(map(str, struct.unpack('!H', data[pos:pos+2]))))
@@ -563,12 +514,10 @@ class Command(pdu.PDU):
             elif param.type is ostr:
                 data, pos = self._parse_ostring(field, data, pos, length)
 
-
     def field_exists(self, field):
         """Return True if field exists, False otherwise"""
 
         return hasattr(self.params, field)
-
 
     def field_is_optional(self, field):
         """Return True if field is optional, False otherwise"""
@@ -588,12 +537,11 @@ class Param:
     def __init__(self, **args):
         """Initialize"""
 
-        if not args.has_key('type'):
+        if 'type' not in args:
             raise KeyError('Parameter Type not defined')
 
         if args.get('type') not in [int, str, ostr, flag]:
-            raise ValueError("Invalid parameter type: %s" \
-                % args.get('type'))
+            raise ValueError("Invalid parameter type: %s" % args.get('type'))
 
         valid_keys = ['type', 'size', 'min', 'max', 'len_field']
         for k in args.keys():
@@ -602,18 +550,17 @@ class Param:
 
         self.type = args.get('type')
 
-        if args.has_key('size'):
+        if 'size' in args:
             self.size = args.get('size')
 
-        if args.has_key('min'):
+        if 'min' in args:
             self.min = args.get('min')
 
-        if args.has_key('max'):
+        if 'max' in args:
             self.max = args.get('max')
 
-        if args.has_key('len_field'):
+        if 'len_field' in args:
             self.len_field = args.get('len_field')
-
 
 
 class BindTransmitter(Command):
@@ -630,16 +577,14 @@ class BindTransmitter(Command):
     }
 
     # Order is important, but params dictionary is unordered
-    params_order = ('system_id', 'password', 'system_type', 
-        'interface_version', 'addr_ton', 'addr_npi', 'address_range')
+    params_order = ('system_id', 'password', 'system_type',
+                    'interface_version', 'addr_ton', 'addr_npi', 'address_range')
 
-    
     def __init__(self, command, **args):
         """Initialize"""
 
         Command.__init__(self, command, **(args))
 
-        #self.__dict__.update({}.fromkeys(self.params.keys()))
         self._set_vars(**({}.fromkeys(self.params.keys())))
 
         self.interface_version = SMPP_VERSION_34
@@ -674,7 +619,7 @@ class BindTransmitterResp(Command):
 class BindReceiverResp(BindTransmitterResp):
     pass
 
-    
+
 class BindTransceiverResp(BindTransmitterResp):
     pass
 
@@ -735,28 +680,27 @@ class DataSM(Command):
     }
 
     params_order = ('service_type', 'source_addr_ton', 'source_addr_npi',
-        'source_addr', 'dest_addr_ton', 'dest_addr_npi', 'destination_addr',
-        'esm_class', 'registered_delivery', 'data_coding'
-        
-        # Optional params:
-        'source_port', 'source_addr_subunit', 'source_network_type',
-        'source_bearer_type', 'source_telematics_id', 'destination_port',
-        'dest_addr_subunit', 'dest_network_type', 'dest_bearer_type',
-        'dest_telematics_id', 'sar_msg_ref_num', 'sar_total_segments',
-        'sar_segment_seqnum', 'more_messages_to_send', 'qos_time_to_live',
-        'payload_type', 'message_payload', 'receipted_message_id',
-        'message_state', 'network_error_code', 'user_message_reference',
-        'privacy_indicator', 'callback_num', 'callback_num_pres_ind',
-        'callback_num_atag', 'source_subaddress', 'dest_subaddress',
-        'user_response_code', 'display_time', 'sms_signal',
-        'ms_validity', 'ms_msg_wait_facilities', 'number_of_messages',
-        'alert_on_message_delivery', 'language_indicator', 'its_reply_type',
-        'its_session_info')
+                    'source_addr', 'dest_addr_ton', 'dest_addr_npi', 'destination_addr',
+                    'esm_class', 'registered_delivery', 'data_coding'
 
+                    # Optional params:
+                    'source_port', 'source_addr_subunit', 'source_network_type',
+                    'source_bearer_type', 'source_telematics_id', 'destination_port',
+                    'dest_addr_subunit', 'dest_network_type', 'dest_bearer_type',
+                    'dest_telematics_id', 'sar_msg_ref_num', 'sar_total_segments',
+                    'sar_segment_seqnum', 'more_messages_to_send', 'qos_time_to_live',
+                    'payload_type', 'message_payload', 'receipted_message_id',
+                    'message_state', 'network_error_code', 'user_message_reference',
+                    'privacy_indicator', 'callback_num', 'callback_num_pres_ind',
+                    'callback_num_atag', 'source_subaddress', 'dest_subaddress',
+                    'user_response_code', 'display_time', 'sms_signal',
+                    'ms_validity', 'ms_msg_wait_facilities', 'number_of_messages',
+                    'alert_on_message_delivery', 'language_indicator', 'its_reply_type',
+                    'its_session_info')
 
     def __init__(self, command):
         """Initialize"""
-        
+
         Command.__init__(self, command)
 
         self._set_vars(**({}.fromkeys(self.params.keys())))
@@ -778,10 +722,9 @@ class GenericNAck(Command):
     _defs = []
 
 
-    
 class SubmitSM(Command):
     """submit_sm command class
-    
+
     This command is used by an ESME to submit short message to the SMSC.
     submit_sm PDU does not support the transaction mode."""
 
@@ -830,7 +773,7 @@ class SubmitSM(Command):
     #
     # Message mode and message type
     #
-    esm_class = None#SMPP_MSGMODE_DEFAULT
+    esm_class = None  # SMPP_MSGMODE_DEFAULT
 
     #
     # Protocol Identifier
@@ -867,7 +810,7 @@ class SubmitSM(Command):
     #
     # Encoding scheme of the short messaege data
     #
-    data_coding = None #SMPP_ENCODING_DEFAULT#ISO10646
+    data_coding = None  # SMPP_ENCODING_DEFAULT#ISO10646
 
     #
     # Indicates the short message to send from a list of predefined
@@ -886,7 +829,7 @@ class SubmitSM(Command):
     short_message = None
 
     #
-    # Optional are taken from params list and are set dynamically when 
+    # Optional are taken from params list and are set dynamically when
     # __init__ is called.
     #
 
@@ -908,7 +851,7 @@ class SubmitSM(Command):
         'data_coding': Param(type=int, size=1),
         'sm_default_msg_id': Param(type=int, size=1),
         'sm_length': Param(type=int, size=1),
-        'short_message': Param(type=ostr, max=254, 
+        'short_message': Param(type=ostr, max=254,
                                len_field='sm_length'),
         # Optional params
         'user_message_reference': Param(type=int, size=2),
@@ -941,32 +884,30 @@ class SubmitSM(Command):
     }
 
     params_order = ('service_type', 'source_addr_ton', 'source_addr_npi',
-        'source_addr', 'dest_addr_ton', 'dest_addr_npi',
-        'destination_addr', 'esm_class', 'protocol_id', 'priority_flag',
-        'schedule_delivery_time', 'validity_period', 'registered_delivery',
-        'replace_if_present_flag', 'data_coding', 'sm_default_msg_id',
-        'sm_length', 'short_message',
+                    'source_addr', 'dest_addr_ton', 'dest_addr_npi',
+                    'destination_addr', 'esm_class', 'protocol_id', 'priority_flag',
+                    'schedule_delivery_time', 'validity_period', 'registered_delivery',
+                    'replace_if_present_flag', 'data_coding', 'sm_default_msg_id',
+                    'sm_length', 'short_message',
 
-        # Optional params
-        'user_message_reference', 'source_port', 'source_addr_subunit',
-        'destination_port', 'dest_addr_subunit', 'sar_msg_ref_num',
-        'sar_total_segments', 'sar_segment_seqnum', 'more_messages_to_send',
-        'payload_type', 'message_payload', 'privacy_indicator',
-        'callback_num', 'callback_num_pres_ind', 'source_subaddress',
-        'dest_subaddress', 'user_response_code', 'display_time',
-        'sms_signal', 'ms_validity', 'ms_msg_wait_facilities',
-        'number_of_messages', 'alert_on_message_delivery',
-        'language_indicator', 'its_reply_type', 'its_session_info',
-        'ussd_service_op')
+                    # Optional params
+                    'user_message_reference', 'source_port', 'source_addr_subunit',
+                    'destination_port', 'dest_addr_subunit', 'sar_msg_ref_num',
+                    'sar_total_segments', 'sar_segment_seqnum', 'more_messages_to_send',
+                    'payload_type', 'message_payload', 'privacy_indicator',
+                    'callback_num', 'callback_num_pres_ind', 'source_subaddress',
+                    'dest_subaddress', 'user_response_code', 'display_time',
+                    'sms_signal', 'ms_validity', 'ms_msg_wait_facilities',
+                    'number_of_messages', 'alert_on_message_delivery',
+                    'language_indicator', 'its_reply_type', 'its_session_info',
+                    'ussd_service_op')
 
-    
     def __init__(self, command, **args):
         """Initialize"""
-        
+
         Command.__init__(self, command, **(args))
 
         self._set_vars(**({}.fromkeys(self.params.keys())))
-
 
     def prep(self):
         """Prepare to generate binary data"""
@@ -989,7 +930,7 @@ class SubmitSMResp(Command):
 
     def __init__(self, command):
         """Initialize"""
-        
+
         Command.__init__(self, command)
 
         self._set_vars(**({}.fromkeys(self.params.keys())))
@@ -1016,9 +957,9 @@ class DeliverSM(SubmitSM):
         'data_coding': Param(type=int, size=1),
         'sm_default_msg_id': Param(type=int, size=1),
         'sm_length': Param(type=int, size=1),
-        'short_message': Param(type=ostr, max=254, 
+        'short_message': Param(type=ostr, max=254,
                                len_field='sm_length'),
-                               
+
         # Optional params
         'user_message_reference': Param(type=int, size=2),
         'source_port': Param(type=int, size=2),
@@ -1039,23 +980,24 @@ class DeliverSM(SubmitSM):
         'message_state': Param(type=int, size=1),
         'receipted_message_id': Param(type=str, max=65),
         }
-    
-    params_order = ('service_type', 'source_addr_ton', 'source_addr_npi',
-        'source_addr', 'dest_addr_ton', 'dest_addr_npi',
-        'destination_addr', 'esm_class', 'protocol_id', 'priority_flag',
-        'schedule_delivery_time', 'validity_period', 'registered_delivery',
-        'replace_if_present_flag', 'data_coding', 'sm_default_msg_id',
-        'sm_length', 'short_message',
 
-        # Optional params
-        'user_message_reference', 'source_port', 'destination_port', 'sar_msg_ref_num',
-        'sar_total_segments', 'sar_segment_seqnum', 'user_response_code',
-        'privacy_indicator', 'payload_type', 'message_payload',
-        'callback_num','source_subaddress',
-        'dest_subaddress','language_indicator', 'its_session_info', 
-        'network_error_code','message_state','receipted_message_id')
-    
-class DeliverSMResp(SubmitSMResp): 
+    params_order = ('service_type', 'source_addr_ton', 'source_addr_npi',
+                    'source_addr', 'dest_addr_ton', 'dest_addr_npi',
+                    'destination_addr', 'esm_class', 'protocol_id', 'priority_flag',
+                    'schedule_delivery_time', 'validity_period', 'registered_delivery',
+                    'replace_if_present_flag', 'data_coding', 'sm_default_msg_id',
+                    'sm_length', 'short_message',
+
+                    # Optional params
+                    'user_message_reference', 'source_port', 'destination_port', 'sar_msg_ref_num',
+                    'sar_total_segments', 'sar_segment_seqnum', 'user_response_code',
+                    'privacy_indicator', 'payload_type', 'message_payload',
+                    'callback_num', 'source_subaddress',
+                    'dest_subaddress', 'language_indicator', 'its_session_info',
+                    'network_error_code', 'message_state', 'receipted_message_id')
+
+
+class DeliverSMResp(SubmitSMResp):
     """deliver_sm_response response class, same as submit_sm"""
     message_id = None
 
@@ -1073,9 +1015,11 @@ class UnbindResp(Command):
     params = {}
     params_order = ()
 
+
 class EnquireLink(Command):
     params = {}
     params_order = ()
+
 
 class EnquireLinkResp(Command):
     params = {}
