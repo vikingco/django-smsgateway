@@ -27,7 +27,7 @@ for req in requirements_test_file:
 
 
 setup(
-    name='smsgateway',
+    name='django-smsgateway',
     version=smsgateway.__version__,
     url='https://github.com/vikingco/smsgateway',
     license='commercial',
