@@ -1,4 +1,5 @@
 import logging
+import phonenumbers
 import re
 
 from django.conf import settings
@@ -15,11 +16,8 @@ def strspn(source, allowed):
 
 
 def check_cell_phone_number(number):
-    cleaned_number = strspn(number, u'0123456789')
-    msisdn_prefix = getattr(settings, 'SMSGATEWAY_MSISDN_PREFIX', '')
-    if msisdn_prefix and not cleaned_number.startswith(msisdn_prefix):
-        cleaned_number = msisdn_prefix + cleaned_number
-    return str(cleaned_number)
+    parsed_number = phonenumbers.parse(number, getattr(settings, 'SMSGATEWAY_DEFAULT_LOCALE', 'BE'))
+    return phonenumbers.format_number(parsed_number, phonenumbers.PhoneNumberFormat.E164)
 
 
 def truncate_sms(text, max_length=160):

@@ -12,3 +12,5 @@ vine>=1.1.3
 pytz>=2016.7
 
 lockfile>=0.9.1
+
+phonenumbers==7.3.2
