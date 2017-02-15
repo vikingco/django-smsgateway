@@ -1,6 +1,6 @@
-import datetime
-import logging
-import redis
+from datetime import datetime
+from logging import getLogger
+from redis import ConnectionPool, Redis
 
 from django.conf import settings
 from celery import shared_task as task
@@ -14,7 +14,7 @@ from smsgateway.enums import PRIORITY_DEFERRED
 from smsgateway.models import SMS, QueuedSMS
 
 
-logger = logging.getLogger(__name__)
+logger = getLogger(__name__)
 
 LOCK_WAIT_TIMEOUT = getattr(settings, "SMSES_LOCK_WAIT_TIMEOUT", -1)
 
@@ -99,11 +99,11 @@ def recv_smses(account_slug='redistore', async=False):
 
     count = 0
     racc = get_account(account_slug)
-    rpool = redis.ConnectionPool(host=racc['host'],
-                                 port=racc['port'],
-                                 db=racc['dbn'],
-                                 password=racc['pwd'])
-    rconn = redis.Redis(connection_pool=rpool)
+    rpool = ConnectionPool(host=racc['host'],
+                           port=racc['port'],
+                           db=racc['dbn'],
+                           password=racc['pwd'])
+    rconn = Redis(connection_pool=rpool)
     logger.info("Processing incoming SMSes for %s", account_slug)
 
     process_func = process_smses.delay if async else process_smses
@@ -119,8 +119,8 @@ def recv_smses(account_slug='redistore', async=False):
             logger.error("SMS key %r is empty", smsk)
             continue
         # since microsecond are not always present - we remove them
-        smsd['sent'] = datetime.datetime.strptime(smsd['sent'].split('.')[0],
-                                                  inq_ts_fmt)
+        smsd['sent'] = datetime.strptime(smsd['sent'].split('.')[0],
+                                         inq_ts_fmt)
         smsd['backend'] = account_slug
         # Compatibility with older code that expects numbers to starts with '+'
         msisdn_prefix = getattr(settings, 'SMSGATEWAY_MSISDN_PREFIX', '')

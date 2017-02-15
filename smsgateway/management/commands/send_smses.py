@@ -1,4 +1,4 @@
-import logging
+from logging import getLogger
 from optparse import make_option
 
 from django.conf import settings
@@ -8,7 +8,7 @@ from smsgateway.tasks import send_smses
 
 LOCK_WAIT_TIMEOUT = getattr(settings, "SMSES_LOCK_WAIT_TIMEOUT", -1)
 
-logger = logging.getLogger(__name__)
+logger = getLogger(__name__)
 
 
 class Command(NoArgsCommand):

@@ -1,10 +1,10 @@
-import logging
-import phonenumbers
-import re
+from logging import getLogger
+from phonenumbers import parse, format_number, PhoneNumberFormat
+from re import sub
 
 from django.conf import settings
 
-logger = logging.getLogger(__name__)
+logger = getLogger(__name__)
 
 
 def strspn(source, allowed):
@@ -16,8 +16,8 @@ def strspn(source, allowed):
 
 
 def check_cell_phone_number(number):
-    parsed_number = phonenumbers.parse(number, getattr(settings, 'SMSGATEWAY_DEFAULT_LOCALE', 'BE'))
-    return phonenumbers.format_number(parsed_number, phonenumbers.PhoneNumberFormat.E164)
+    parsed_number = parse(number, getattr(settings, 'SMSGATEWAY_DEFAULT_LOCALE', 'BE'))
+    return format_number(parsed_number, PhoneNumberFormat.E164)
 
 
 def truncate_sms(text, max_length=160):
@@ -69,7 +69,7 @@ def parse_sms(content):
     """
     # work with uppercase and single spaces
     content = content.upper().strip()
-    content = re.sub('\s+', " ", content)
+    content = sub('\s+', " ", content)
 
     from smsgateway.backends.base import all_hooks
     content = _match_keywords(content, all_hooks)

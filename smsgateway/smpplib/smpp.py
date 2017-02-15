@@ -22,7 +22,7 @@
 
 """SMPP module"""
 
-import pdu
+import pdu  # nopep8
 
 
 smpp_instance = None

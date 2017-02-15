@@ -1,10 +1,10 @@
-import datetime
-import re
+from datetime import datetime
+from re import findall
 
 from django.http import HttpResponse
 from django.utils.http import urlencode
 
-import smsgateway
+from smsgateway import get_account, send, send_queued
 from smsgateway.models import SMS
 from smsgateway.backends.base import SMSBackend
 from smsgateway.utils import check_cell_phone_number
@@ -43,9 +43,9 @@ class MobileWebBackend(SMSBackend):
             return HttpResponse('OK')
 
         # Parse and process message
-        year, month, day, hour, minute, second, ms = map(int, re.findall(r'(\d+)', request_dict['SendDateTime']))
+        year, month, day, hour, minute, second, ms = map(int, findall(r'(\d+)', request_dict['SendDateTime']))
         sms_dict = {
-            'sent': datetime.datetime(year, month, day, hour, minute, second),
+            'sent': datetime(year, month, day, hour, minute, second),
             'content': request_dict['MsgeContent'],
             'sender': check_cell_phone_number(request_dict['SenderGSMNR']),
             'to': request_dict['ShortCode'],
@@ -58,11 +58,11 @@ class MobileWebBackend(SMSBackend):
 
         # If necessary, send response SMS
         if response is not None:
-            signature = smsgateway.get_account(reply_using)['reply_signature']
-            success = smsgateway.send([sms.sender], response, signature, using=reply_using)
+            signature = get_account(reply_using)['reply_signature']
+            success = send([sms.sender], response, signature, using=reply_using)
             # Sending failed, queue SMS
             if not success:
-                smsgateway.send_queued(sms.sender, response, signature, reply_using)
+                send_queued(sms.sender, response, signature, reply_using)
             return HttpResponse(response)
 
         return HttpResponse('OK')

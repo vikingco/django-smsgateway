@@ -22,10 +22,10 @@
 
 """SMPP Commands module"""
 
-import struct
+from struct import pack, unpack
 
-import smpp
-import pdu
+from smpp import UnknownCommandError, next_seq
+from pdu import PDU, SMPP_ESME_ROK
 from ptypes import ostr, flag
 
 
@@ -219,8 +219,8 @@ def get_command_name(code):
     try:
         return commands.keys()[commands.values().index(code)]
     except ValueError:
-        raise smpp.UnknownCommandError("Unknown SMPP command code "
-                                       "'0x%x'" % code)
+        raise UnknownCommandError("Unknown SMPP command code "
+                                  "'0x%x'" % code)
 
 
 def get_command_code(name):
@@ -230,7 +230,7 @@ def get_command_code(name):
     try:
         return commands[name]
     except KeyError:
-        raise smpp.UnknownCommandError("Unknown SMPP command name '%s'" % name)
+        raise UnknownCommandError("Unknown SMPP command name '%s'" % name)
 
 
 def get_optional_name(code):
@@ -240,8 +240,8 @@ def get_optional_name(code):
     try:
         return optional_params.keys()[optional_params.values().index(code)]
     except ValueError:
-        raise smpp.UnknownCommandError("Unknown SMPP command code "
-                                       "'0x%x'" % code)
+        raise UnknownCommandError("Unknown SMPP command code "
+                                  "'0x%x'" % code)
 
 
 def get_optional_code(name):
@@ -251,10 +251,10 @@ def get_optional_code(name):
     try:
         return optional_params[name]
     except KeyError:
-        raise smpp.UnknownCommandError("Unknown SMPP command name '%s'" % name)
+        raise UnknownCommandError("Unknown SMPP command name '%s'" % name)
 
 
-class Command(pdu.PDU):
+class Command(PDU):
     """SMPP PDU Command class"""
 
     params = {}
@@ -264,9 +264,9 @@ class Command(pdu.PDU):
 
         self.command = command
         if args.get('sequence') is None:
-            self.sequence_number = smpp.next_seq()
+            self.sequence_number = next_seq()
 
-        self.status = pdu.SMPP_ESME_ROK
+        self.status = SMPP_ESME_ROK
 
         self._set_vars(**(args))
 
@@ -326,7 +326,7 @@ class Command(pdu.PDU):
         fmt = self._pack_format(field)
         data = getattr(self, field)
         if data:
-            return struct.pack(fmt, data)
+            return pack(fmt, data)
         else:
             return chr(0)  # null terminator
 
@@ -367,7 +367,7 @@ class Command(pdu.PDU):
         field_length = self.params[field].size
         value = None
         if data:
-            value = struct.pack(">HH"+fmt, field_code, field_length, data)
+            value = pack(">HH"+fmt, field_code, field_length, data)
         return value
 
     def _generate_string_tlv(self, field):
@@ -379,7 +379,7 @@ class Command(pdu.PDU):
         if hasattr(self.params[field], 'size'):
             size = self.params[field].size
             fvalue = field_value.ljust(size, chr(0))
-            value = struct.pack(">HH", field_code, size)+fvalue
+            value = pack(">HH", field_code, size)+fvalue
         elif hasattr(self.params[field], 'max'):
             if len(field_value or '') > self.params[field].max:
                 field_value = field_value[0:self.params[field].max-1]
@@ -387,7 +387,7 @@ class Command(pdu.PDU):
             if field_value:
                 field_length = len(field_value)
                 fvalue = field_value + chr(0)
-                value = struct.pack(">HH", field_code, field_length)+fvalue
+                value = pack(">HH", field_code, field_length)+fvalue
             else:
                 value = None  # chr(0)
         return value
@@ -403,7 +403,7 @@ class Command(pdu.PDU):
         value = None
         if field_value:
             field_length = len(field_value)
-            value = struct.pack(">HH", field_code, field_length) + field_value
+            value = pack(">HH", field_code, field_length) + field_value
         return value
 
     def _pack_format(self, field):
@@ -497,13 +497,13 @@ class Command(pdu.PDU):
         pos = 0
 
         while pos < dlen:
-            unpacked_data = struct.unpack('>H', data[pos:pos+2])
+            unpacked_data = unpack('>H', data[pos:pos+2])
             type_code = int(''.join(map(str, unpacked_data)))
 
             field = get_optional_name(type_code)
             pos += 2
 
-            length = int(''.join(map(str, struct.unpack('!H', data[pos:pos+2]))))
+            length = int(''.join(map(str, unpack('!H', data[pos:pos+2]))))
             pos += 2
             param = self.params[field]
 

@@ -37,3 +37,5 @@ flake8-debugger==1.4.0
 -e git+ssh://git@github.com/vikingco/flake8-builtins.git@1.0#egg=flake8-builtins
 # Checks for uses of Django-style asserts
 -e git+ssh://git@github.com/vikingco/flake8-pytest.git@1.1#egg=flake8-pytest
+# Checks for module-level imports
+git+ssh://git@github.com/vikingco/flake8-module-import.git@1.0#egg=flake8-module-imports

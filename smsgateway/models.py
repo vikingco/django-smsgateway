@@ -4,11 +4,11 @@ from django.utils.translation import ugettext_lazy as _
 from smsgateway.enums import (OPERATOR_CHOICES, OPERATOR_UNKNOWN, GATEWAY_CHOICES, DIRECTION_CHOICES, DIRECTION_INBOUND,
                               PRIORITIES, PRIORITY_MEDIUM, PRIORITY_DEFERRED)
 
-import datetime
+from datetime import datetime
 
 
 class SMS(models.Model):
-    sent = models.DateTimeField(default=datetime.datetime.now, verbose_name=_(u'sent'))
+    sent = models.DateTimeField(default=datetime.now, verbose_name=_(u'sent'))
     content = models.TextField(verbose_name=_(u'content'), help_text=_(u'SMS content'))
     sender = models.CharField(max_length=32, verbose_name=_(u'sender'), db_index=True)
     to = models.CharField(max_length=32, verbose_name=_(u'receiver'), db_index=True)
@@ -35,7 +35,7 @@ class QueuedSMS(models.Model):
     to = models.CharField(max_length=32, verbose_name=_(u'receiver'))
     signature = models.CharField(max_length=32, verbose_name=_(u'signature'))
     content = models.TextField(verbose_name=_(u'content'), help_text=_(u'SMS content'))
-    created = models.DateTimeField(default=datetime.datetime.now)
+    created = models.DateTimeField(default=datetime.now)
     using = models.CharField(blank=True, max_length=100, verbose_name=_(u'gateway'),
                              help_text=_(u'Via which provider the SMS will be sent.'))
     priority = models.CharField(max_length=1, choices=PRIORITIES, default=PRIORITY_MEDIUM)

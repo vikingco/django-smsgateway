@@ -1,16 +1,16 @@
-import os
-import sys
-import unittest
+from os import chdir, path, getcwd, environ
+from sys import path as sys_path
+from unittest import TestSuite, TestLoader
 
 
 def setup_django_settings():
-    os.chdir(os.path.join(os.path.dirname(__file__), '..'))
-    sys.path.inser(0, os.getcwd())
-    os.environ['DJANGO_SETTINGS_MODULE'] = 'tests.settings'
+    chdir(path.join(path.dirname(__file__), '..'))
+    sys_path.inser(0, getcwd())
+    environ['DJANGO_SETTINGS_MODULE'] = 'tests.settings'
 
 
 def run_tests():
-    if not os.environ.get('DJANGO_SETTINGS_MODULE', False):
+    if not environ.get('DJANGO_SETTINGS_MODULE', False):
         setup_django_settings()
 
     from django.conf import settings
@@ -22,7 +22,7 @@ def run_tests():
 
 
 def suite():
-    if not os.environ.get('DJANGO_SETTINGS_MODULE', False):
+    if not environ.get('DJANGO_SETTINGS_MODULE', False):
         setup_django_settings()
     else:
         from django.apps import apps
@@ -33,10 +33,10 @@ def suite():
     from smsgateway.tests import tasks
     from smsgateway.tests.backends import smpp, redistore
 
-    testsuite = unittest.TestSuite([
-        unittest.TestLoader().loadTestsFromModule(smpp),
-        unittest.TestLoader().loadTestsFromModule(redistore),
-        unittest.TestLoader().loadTestsFromModule(tasks),
+    testsuite = TestSuite([
+        TestLoader().loadTestsFromModule(smpp),
+        TestLoader().loadTestsFromModule(redistore),
+        TestLoader().loadTestsFromModule(tasks),
     ])
     return testsuite
 

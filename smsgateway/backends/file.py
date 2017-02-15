@@ -1,4 +1,4 @@
-import codecs
+from codecs import open
 
 from django.http import HttpResponse
 
@@ -12,7 +12,7 @@ class FileBackend(SMSBackend):
     def get_send_url(self, sms_request, account_dict):
         path = account_dict['path']
 
-        f = codecs.open(path, 'ab', 'utf8')
+        f = open(path, 'ab', 'utf8')
         f.write(u'%s,%s,%s\n' % (sms_request.to[0], sms_request.msg, sms_request.signature))
         f.close()
 

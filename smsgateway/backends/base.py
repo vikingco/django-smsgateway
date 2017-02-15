@@ -1,7 +1,7 @@
-import urllib2
-import logging
-import datetime
-import re
+from urllib2 import urlopen
+from logging import getLogger
+from datetime import datetime
+from re import sub
 
 from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
@@ -11,7 +11,7 @@ from smsgateway.enums import DIRECTION_OUTBOUND
 from smsgateway.models import SMS
 from smsgateway.sms import SMSRequest
 
-logger = logging.getLogger(__name__)
+logger = getLogger(__name__)
 
 try:
     all_hooks = settings.SMSGATEWAY_HOOK
@@ -51,7 +51,7 @@ class SMSBackend(object):
             result = u''
             if url is not None:
                 try:
-                    sock = urllib2.urlopen(url)
+                    sock = urlopen(url)
                     result = sock.read()
                     sock.close()
                 except:
@@ -108,7 +108,7 @@ class SMSBackend(object):
         """
         Generate a reference for the send sms
         """
-        return datetime.datetime.now().strftime('%Y%m%d%H%M%S') + u''.join(sms_request.to[:1])
+        return datetime.now().strftime('%Y%m%d%H%M%S') + u''.join(sms_request.to[:1])
 
     def get_gateway_ref(self, reference, result=None):
         """
@@ -162,7 +162,7 @@ class SMSBackend(object):
 
         # work with uppercase and single spaces
         content = sms.content.upper().strip()
-        content = re.sub('\s+', " ", content)
+        content = sub('\s+', " ", content)
 
         # Try to find the correct hook
         callable_name = self._find_callable(content, all_hooks)

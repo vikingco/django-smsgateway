@@ -1,9 +1,9 @@
 # -*- encoding: utf-8 -*-
 
-import datetime
-import hashlib
-import logging
-import redis
+from datetime import datetime
+from hashlib import md5
+from logging import getLogger
+from redis import ConnectionPool, Redis
 
 from smsgateway.enums import DIRECTION_OUTBOUND
 from smsgateway.models import SMS
@@ -11,7 +11,7 @@ from smsgateway.backends.base import SMSBackend
 from smsgateway.sms import SMSRequest
 
 
-logger = logging.getLogger(__name__)
+logger = getLogger(__name__)
 
 
 class RedistoreBackend(SMSBackend):
@@ -41,17 +41,17 @@ class RedistoreBackend(SMSBackend):
 
         self.sms_data_iter = SMSDataIterator(sms_list, account_dict)
         self.redis_key_prefix = account_dict['key_prefix']
-        self.redis_pool = redis.ConnectionPool(host=account_dict['host'],
-                                               port=account_dict['port'],
-                                               db=account_dict['dbn'],
-                                               password=account_dict['pwd'])
+        self.redis_pool = ConnectionPool(host=account_dict['host'],
+                                         port=account_dict['port'],
+                                         db=account_dict['dbn'],
+                                         password=account_dict['pwd'])
         return True
 
     def _get_sms_list(self, sms_request):
         if not sms_request:
             return []
         sms_list = []
-        self.reference = (datetime.datetime.now().strftime('%Y%m%d%H%M%S') + '+' + u''.join(sms_request.to[:1]))
+        self.reference = (datetime.now().strftime('%Y%m%d%H%M%S') + '+' + u''.join(sms_request.to[:1]))
         for msisdn in sms_request.to:
             sms_list.append(SMSRequest(msisdn,
                                        sms_request.msg,
@@ -65,7 +65,7 @@ class RedistoreBackend(SMSBackend):
             return []
 
         pipe = self.redis_conn.pipeline(transaction=False)
-        key = hashlib.md5(self.reference).hexdigest()
+        key = md5(self.reference).hexdigest()
         queue_key = self.prefix('smsreq:%s' % key)
         allqueues_key = self.prefix('outq')
 
@@ -112,7 +112,7 @@ class RedistoreBackend(SMSBackend):
     def send(self, sms_request, account_dict):
         """RedistoreBackend Entry Point"""
         self._initialize(sms_request, account_dict)
-        self.redis_conn = redis.Redis(connection_pool=self.redis_pool)
+        self.redis_conn = Redis(connection_pool=self.redis_pool)
         redis_results = self._send_smses()
         check_result = self._check_sent_smses(redis_results)
         return check_result

@@ -22,7 +22,7 @@
 
 """PDU module"""
 
-import struct
+from struct import pack, unpack
 
 #
 # SMPP error codes:
@@ -139,44 +139,46 @@ sequence = 0
 def factory(command_name, **args):
     """Return instance of a specific command class"""
 
-    import command
+    from command import (BindTransmitter, BindTransmitterResp, BindReceiver, BindReceiverResp, BindTransceiver,
+                         BindTransceiverResp, DataSM, DataSMResp, GenericNAck, SubmitSM, SubmitSMResp, DeliverSM,
+                         DeliverSMResp, Unbind, UnbindResp, EnquireLink, EnquireLinkResp)
 
     cc = None
 
     if command_name == 'bind_transmitter':
-        cc = command.BindTransmitter
+        cc = BindTransmitter
     elif command_name == 'bind_transmitter_resp':
-        cc = command.BindTransmitterResp
+        cc = BindTransmitterResp
     if command_name == 'bind_receiver':
-        cc = command.BindReceiver
+        cc = BindReceiver
     elif command_name == 'bind_receiver_resp':
-        cc = command.BindReceiverResp
+        cc = BindReceiverResp
     if command_name == 'bind_transceiver':
-        cc = command.BindTransceiver
+        cc = BindTransceiver
     elif command_name == 'bind_transceiver_resp':
-        cc = command.BindTransceiverResp
+        cc = BindTransceiverResp
     elif command_name == 'data_sm':
-        cc = command.DataSM
+        cc = DataSM
     elif command_name == 'data_sm_resp':
-        cc = command.DataSMResp
+        cc = DataSMResp
     elif command_name == 'generic_nack':
-        cc = command.GenericNAck
+        cc = GenericNAck
     elif command_name == 'submit_sm':
-        cc = command.SubmitSM
+        cc = SubmitSM
     elif command_name == 'submit_sm_resp':
-        cc = command.SubmitSMResp
+        cc = SubmitSMResp
     elif command_name == 'deliver_sm':
-        cc = command.DeliverSM
+        cc = DeliverSM
     elif command_name == 'deliver_sm_resp':
-        cc = command.DeliverSMResp
+        cc = DeliverSMResp
     elif command_name == 'unbind':
-        cc = command.Unbind
+        cc = Unbind
     elif command_name == 'unbind_resp':
-        cc = command.UnbindResp
+        cc = UnbindResp
     elif command_name == 'enquire_link':
-        cc = command.EnquireLink
+        cc = EnquireLink
     elif command_name == 'enquire_link_resp':
-        cc = command.EnquireLinkResp
+        cc = EnquireLinkResp
     if not cc:
         raise ValueError("Command '%s' is not supported" % command_name)
 
@@ -216,8 +218,8 @@ class PDU:
     def is_response(self):
         """Return True if this is a response PDU, False otherwise"""
 
-        import command
-        if command.get_command_code(self.command) & 0x80000000:
+        from command import get_command_code
+        if get_command_code(self.command) & 0x80000000:
             return True
 
         return False
@@ -260,7 +262,7 @@ class PDU:
         #   ...
 
         header = data[0:16]
-        chunks = struct.unpack('>LLLL', header)
+        chunks = unpack('>LLLL', header)
         self.length = chunks[0]
         self.command = self.extract_command(data)
         self.status = chunks[2]
@@ -273,16 +275,16 @@ class PDU:
     def extract_command(pdu):
         """Extract command from a PDU"""
 
-        code = struct.unpack('>L', pdu[4:8])[0]
+        code = unpack('>L', pdu[4:8])[0]
 
-        import command
+        from command import get_command_name
 
-        return command.get_command_name(code)
+        return get_command_name(code)
 
     def _unpack(self, format, data):
-        """Unpack values. Uses struct.unpack. TODO: remove this"""
+        """Unpack values. Uses unpack. TODO: remove this"""
 
-        return struct.unpack(format, data)
+        return unpack(format, data)
 
     def generate(self):
         """Generate raw PDU"""
@@ -291,11 +293,11 @@ class PDU:
 
         self._length = len(body) + 16
 
-        import command
+        from command import get_command_code
 
-        command_code = command.get_command_code(self.command)
+        command_code = get_command_code(self.command)
 
-        header = struct.pack(">LLLL", self._length, command_code,
-                             self.status, self.sequence)
+        header = pack(">LLLL", self._length, command_code,
+                      self.status, self.sequence)
 
         return header + body

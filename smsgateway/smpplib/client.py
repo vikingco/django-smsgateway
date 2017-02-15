@@ -21,14 +21,14 @@
 # Added support for Optional TLV's
 
 """SMPP client module"""
-import logging
+from logging import getLogger
 
-import socket
-import struct
-import binascii
+from socket import socket, AF_INET, SOCK_STREAM, error as socket_error, timeout
+from struct import unpack, error as struct_error
+from binascii import b2a_hex
 
-import smpp
-import pdu
+from smpp import make_pdu, parse_pdu
+from pdu import descs, SMPP_ESME_RINVBNDSTS, PDU
 
 
 SMPP_CLIENT_STATE_CLOSED = 0
@@ -37,7 +37,7 @@ SMPP_CLIENT_STATE_BOUND_TX = 2
 SMPP_CLIENT_STATE_BOUND_RX = 3
 SMPP_CLIENT_STATE_BOUND_TRX = 4
 
-logger = logging.getLogger(__name__)
+logger = getLogger(__name__)
 
 command_states = {
     'bind_transmitter': (SMPP_CLIENT_STATE_OPEN,),
@@ -131,7 +131,7 @@ class Client:
 
         self.host = host
         self.port = int(port)
-        self._socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self._socket = socket(AF_INET, SOCK_STREAM)
         self._socket.settimeout(5)
         self._error_stack = []
         self.receiver_mode = False
@@ -144,7 +144,7 @@ class Client:
         try:
             self._socket.connect((self.host, self.port))
             self.state = SMPP_CLIENT_STATE_OPEN
-        except socket.error:
+        except socket_error:
             raise ConnectionError("Connection refused")
 
     def disconnect(self):
@@ -162,7 +162,7 @@ class Client:
             logger.debug('I am receiver')
             self.receiver_mode = True
 
-        p = smpp.make_pdu(command_name, **(args))
+        p = make_pdu(command_name, **(args))
 
         self.send_pdu(p)
         return self.read_pdu()
@@ -185,7 +185,7 @@ class Client:
     def unbind(self):
         """Unbind from the SMSC"""
 
-        p = smpp.make_pdu('unbind')
+        p = make_pdu('unbind')
 
         self.send_pdu(p)
         return self.read_pdu()
@@ -194,7 +194,7 @@ class Client:
         """Send PDU to the SMSC"""
 
         if self.state not in command_states[p.command]:
-            raise Exception("Command %s failed: %s" % (p.command, pdu.descs[pdu.SMPP_ESME_RINVBNDSTS]))
+            raise Exception("Command %s failed: %s" % (p.command, descs[SMPP_ESME_RINVBNDSTS]))
 
         self._push_pdu(p)
         logger.debug('Sending %s PDU' % (p.command))
@@ -202,7 +202,7 @@ class Client:
         generated = p.generate()
 
         logger.debug(' '.join(
-                [str(x) for x in ['>>', binascii.b2a_hex(generated), len(generated), 'bytes']]))
+                [str(x) for x in ['>>', b2a_hex(generated), len(generated), 'bytes']]))
 
         self._socket.send(generated)
 
@@ -218,24 +218,24 @@ class Client:
             return False
 
         try:
-            length = struct.unpack('>L', raw_len)[0]
-        except struct.error:
+            length = unpack('>L', raw_len)[0]
+        except struct_error:
             logger.debug('Receive broken pdu...')
             return False
         raw_pdu = self._socket.recv(length - 4)
         raw_pdu = raw_len + raw_pdu
 
         logger.debug(' '.join(
-                [str(x) for x in ['<<', binascii.b2a_hex(raw_pdu), len(raw_pdu), 'bytes']]))
+                [str(x) for x in ['<<', b2a_hex(raw_pdu), len(raw_pdu), 'bytes']]))
 
-        cmd = pdu.PDU.extract_command(raw_pdu)
+        cmd = PDU.extract_command(raw_pdu)
         logger.debug('Read %s PDU' % cmd)
 
-        p = smpp.parse_pdu(raw_pdu)
+        p = parse_pdu(raw_pdu)
         self._push_pdu(p)
 
         if p.is_error():
-            raise Exception('(%s) %s: %s' % (p.status, p.command, pdu.descs[p.status]))
+            raise Exception('(%s) %s: %s' % (p.status, p.command, descs[p.status]))
         elif p.command in state_setters.keys():
             self.state = state_setters[p.command]
 
@@ -248,13 +248,13 @@ class Client:
 
     def _message_received(self, p):
         """Handler for received message event"""
-        dsmr = smpp.make_pdu('deliver_sm_resp')
+        dsmr = make_pdu('deliver_sm_resp')
         dsmr.sequence = p.sequence
         self.send_pdu(dsmr)
         return self.message_received_handler(pdu=p)
 
     def _enquire_link_received(self):
-        ler = smpp.make_pdu('enquire_link_resp')
+        ler = make_pdu('enquire_link_resp')
         self.send_pdu(ler)
         logger.debug("Link Enuiry...")
 
@@ -278,7 +278,7 @@ class Client:
         while True:
             try:
                 p = self.read_pdu()
-            except socket.timeout:
+            except timeout:
                 logger.debug('Socket timeout, listening again')
                 continue
 
@@ -301,7 +301,7 @@ class Client:
             destination_addr -- Destination address (string)
             short_message -- Message text (string)"""
 
-        ssm = smpp.make_pdu('submit_sm', **(args))
+        ssm = make_pdu('submit_sm', **(args))
 
         self.send_pdu(ssm)
         resp = self.read_pdu()
@@ -327,14 +327,14 @@ class ConnectionError(Exception):
 #
 if __name__ == '__main__':
 
-    import sys
-    sys.path.insert(0, '..')
-    import smpplib
+    from sys import path
+    path.insert(0, '..')
+    from smpplib import client as smpplib_client
 
     def recv_handler(**args):
         pass
 
-    client = smpplib.client.Client('localhost', 2775)
+    client = smpplib_client.Client('localhost', 2775)
     client.connect()
 
     client.set_message_received_handler(recv_handler)

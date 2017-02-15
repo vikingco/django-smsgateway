@@ -1,7 +1,7 @@
 # -*- encoding: utf-8 -*-
 
-import datetime
-import logging
+from datetime import datetime
+from logging import getLogger
 
 from smsgateway.backends.base import SMSBackend
 from smsgateway.enums import DIRECTION_OUTBOUND
@@ -9,7 +9,7 @@ from smsgateway.models import SMS
 from smsgateway.smpplib import client
 from smsgateway.sms import SMSRequest
 
-logger = logging.getLogger(__name__)
+logger = getLogger(__name__)
 
 
 class SMPPBackend(SMSBackend):
@@ -38,7 +38,7 @@ class SMPPBackend(SMSBackend):
         if not sms_request:
             return []
         sms_list = []
-        reference = (datetime.datetime.now().strftime('%Y%m%d%H%M%S') + u''.join(sms_request.to[:1]))
+        reference = (datetime.now().strftime('%Y%m%d%H%M%S') + u''.join(sms_request.to[:1]))
         for msisdn in sms_request.to:
             sms_list.append(SMSRequest(msisdn,
                                        sms_request.msg,
