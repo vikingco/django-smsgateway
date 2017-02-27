@@ -162,7 +162,7 @@ class SMSBackend(object):
 
         # work with uppercase and single spaces
         content = sms.content.upper().strip()
-        content = sub('\s+', " ", content)
+        content = sub('\s+', ' ', content)
 
         # Try to find the correct hook
         callable_name = self._find_callable(content, all_hooks)

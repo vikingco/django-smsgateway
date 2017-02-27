@@ -16,7 +16,7 @@ from smsgateway.models import SMS, QueuedSMS
 
 logger = getLogger(__name__)
 
-LOCK_WAIT_TIMEOUT = getattr(settings, "SMSES_LOCK_WAIT_TIMEOUT", -1)
+LOCK_WAIT_TIMEOUT = getattr(settings, 'SMSES_LOCK_WAIT_TIMEOUT', -1)
 
 
 @task
@@ -46,7 +46,7 @@ def send_smses(send_deferred=False, backend=None, limit=None):
         if isinstance(limit, int):
             to_send = to_send[:limit]
 
-        logger.info("Trying to send %i messages." % to_send.count())
+        logger.info('Trying to send %i messages.' % to_send.count())
 
         # Send each SMS
         for sms in to_send:
@@ -56,12 +56,12 @@ def send_smses(send_deferred=False, backend=None, limit=None):
                 sms_using = None if sms.using == '__none__' else sms.using
             if send(sms.to, sms.content, sms.signature, sms_using, sms.reliable):
                 # Successfully sent, remove from queue
-                logger.info("SMS to %s sent." % sms.to)
+                logger.info('SMS to %s sent.' % sms.to)
                 sms.delete()
                 successes += 1
             else:
                 # Failed to send, defer SMS
-                logger.info("SMS to %s failed." % sms.to)
+                logger.info('SMS to %s failed.' % sms.to)
                 sms.defer()
                 failures += 1
     finally:
@@ -90,7 +90,7 @@ def process_smses(smsk, sms_id, account_slug):
         success = send([smsobj.sender], response, signature, reply_account)
         if not success:
             send_queued(smsobj.sender, response, signature, reply_account)
-    logger.debug("End processing incoming SMS key: %s", smsk)
+    logger.debug('End processing incoming SMS key: %s', smsk)
 
 
 def recv_smses(account_slug='redistore', async=False):
@@ -104,7 +104,7 @@ def recv_smses(account_slug='redistore', async=False):
                            db=racc['dbn'],
                            password=racc['pwd'])
     rconn = Redis(connection_pool=rpool)
-    logger.info("Processing incoming SMSes for %s", account_slug)
+    logger.info('Processing incoming SMSes for %s', account_slug)
 
     process_func = process_smses.delay if async else process_smses
 
@@ -113,10 +113,10 @@ def recv_smses(account_slug='redistore', async=False):
         if smsk is None:
             break
         count += 1
-        logger.debug("Saving incoming SMS key: %s", smsk)
+        logger.debug('Saving incoming SMS key: %s', smsk)
         smsd = rconn.hgetall(smsk)
         if not smsd:
-            logger.error("SMS key %r is empty", smsk)
+            logger.error('SMS key %r is empty', smsk)
             continue
         # since microsecond are not always present - we remove them
         smsd['sent'] = datetime.strptime(smsd['sent'].split('.')[0],
@@ -130,5 +130,5 @@ def recv_smses(account_slug='redistore', async=False):
         smsobj.save()
         process_func(smsk, smsobj.pk, account_slug)
 
-    logger.info("End sharing out incoming SMSes for %s (%d saved).",
+    logger.info('End sharing out incoming SMSes for %s (%d saved).',
                 account_slug, count)

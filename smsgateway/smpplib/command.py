@@ -219,8 +219,7 @@ def get_command_name(code):
     try:
         return commands.keys()[commands.values().index(code)]
     except ValueError:
-        raise UnknownCommandError("Unknown SMPP command code "
-                                  "'0x%x'" % code)
+        raise UnknownCommandError("Unknown SMPP command code '0x%x'" % code)
 
 
 def get_command_code(name):
@@ -240,8 +239,7 @@ def get_optional_name(code):
     try:
         return optional_params.keys()[optional_params.values().index(code)]
     except ValueError:
-        raise UnknownCommandError("Unknown SMPP command code "
-                                  "'0x%x'" % code)
+        raise UnknownCommandError("Unknown SMPP command code '0x%x'" % code)
 
 
 def get_optional_code(name):
@@ -367,7 +365,7 @@ class Command(PDU):
         field_length = self.params[field].size
         value = None
         if data:
-            value = pack(">HH"+fmt, field_code, field_length, data)
+            value = pack('>HH'+fmt, field_code, field_length, data)
         return value
 
     def _generate_string_tlv(self, field):
@@ -379,7 +377,7 @@ class Command(PDU):
         if hasattr(self.params[field], 'size'):
             size = self.params[field].size
             fvalue = field_value.ljust(size, chr(0))
-            value = pack(">HH", field_code, size)+fvalue
+            value = pack('>HH', field_code, size)+fvalue
         elif hasattr(self.params[field], 'max'):
             if len(field_value or '') > self.params[field].max:
                 field_value = field_value[0:self.params[field].max-1]
@@ -387,7 +385,7 @@ class Command(PDU):
             if field_value:
                 field_length = len(field_value)
                 fvalue = field_value + chr(0)
-                value = pack(">HH", field_code, field_length)+fvalue
+                value = pack('>HH', field_code, field_length)+fvalue
             else:
                 value = None  # chr(0)
         return value
@@ -403,7 +401,7 @@ class Command(PDU):
         value = None
         if field_value:
             field_length = len(field_value)
-            value = pack(">HH", field_code, field_length) + field_value
+            value = pack('>HH', field_code, field_length) + field_value
         return value
 
     def _pack_format(self, field):
@@ -525,7 +523,6 @@ class Command(PDU):
         if field in optional_params:
             return True
         elif self.is_vendor():
-            # FIXME: No vendor support yet
             return False
 
         return False
@@ -541,7 +538,7 @@ class Param:
             raise KeyError('Parameter Type not defined')
 
         if args.get('type') not in [int, str, ostr, flag]:
-            raise ValueError("Invalid parameter type: %s" % args.get('type'))
+            raise ValueError('Invalid parameter type: %s' % args.get('type'))
 
         valid_keys = ['type', 'size', 'min', 'max', 'len_field']
         for k in args.keys():

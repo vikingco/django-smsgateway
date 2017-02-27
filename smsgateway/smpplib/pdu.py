@@ -241,7 +241,7 @@ class PDU:
         try:
             desc = descs[status]
         except KeyError:
-            return "Description for status 0x%x not found!" % status
+            return 'Description for status 0x%x not found!' % status
 
         return desc
 
@@ -282,7 +282,7 @@ class PDU:
         return get_command_name(code)
 
     def _unpack(self, format, data):
-        """Unpack values. Uses unpack. TODO: remove this"""
+        """Unpack values. Uses unpack."""
 
         return unpack(format, data)
 
@@ -297,7 +297,7 @@ class PDU:
 
         command_code = get_command_code(self.command)
 
-        header = pack(">LLLL", self._length, command_code,
+        header = pack('>LLLL', self._length, command_code,
                       self.status, self.sequence)
 
         return header + body

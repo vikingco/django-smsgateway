@@ -9,5 +9,5 @@ class SMSFactory(DjangoModelFactory):
         model = SMS
 
     content = 'This is a test'
-    sender = Sequence(lambda n: u"+32476{0:06d}".format(n))
-    to = Sequence(lambda n: u"+32476{0:06d}".format(n))
+    sender = Sequence(lambda n: u'+32476{0:06d}'.format(n))
+    to = Sequence(lambda n: u'+32476{0:06d}'.format(n))

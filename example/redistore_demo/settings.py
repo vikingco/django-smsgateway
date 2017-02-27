@@ -7,19 +7,19 @@ TEMPLATE_DEBUG = DEBUG
 THUMBNAIL_DEBUG = DEBUG
 
 ADMINS = (
-    ("Alice Bloggs", "alice@example.com"),
+    ('Alice Bloggs', 'alice@example.com'),
 )
 
 MANAGERS = ADMINS
 
 DATABASES = {
     'default': {
-        'ENGINE':   "django.db.backends.sqlite3",
-        'NAME':     "redistore_demo.db",
-        'USER':     "",
-        'PASSWORD': "",
-        'HOST':     "",
-        'PORT':     "",
+        'ENGINE':   'django.db.backends.sqlite3',
+        'NAME':     'redistore_demo.db',
+        'USER':     '',
+        'PASSWORD': '',
+        'HOST':     '',
+        'PORT':     '',
     }
 }
 
@@ -28,11 +28,11 @@ DATABASES = {
 # although not all choices may be available on all operating systems.
 # If running in a Windows environment this must be set to the same as your
 # system time zone.
-TIME_ZONE = "Europe/Brussels"
+TIME_ZONE = 'Europe/Brussels'
 
 # Language code for this installation. All choices can be found here:
 # http://www.i18nguy.com/unicode/language-identifiers.html
-LANGUAGE_CODE = "en-us"
+LANGUAGE_CODE = 'en-us'
 
 SITE_ID = 1
 
@@ -41,30 +41,30 @@ SITE_ID = 1
 USE_I18N = True
 
 # Absolute path to the directory that holds media.
-# Example: "/home/media/media.lawrence.com/"
-MEDIA_ROOT = path.join(PRJ_PATH, "media")
+# Example: '/home/media/media.lawrence.com/'
+MEDIA_ROOT = path.join(PRJ_PATH, 'media')
 
 # URL that handles the media served from MEDIA_ROOT. Make sure to use a
 # trailing slash if there is a path component (optional in other cases).
-# Examples: "http://media.lawrence.com", "http://example.com/media/"
-MEDIA_URL = "/media/"
+# Examples: 'http://media.lawrence.com', 'http://example.com/media/'
+MEDIA_URL = '/media/'
 
 # Absolute path to the directory static files should be collected to.
 # Don't put anything in this directory yourself; store your static files
-# in apps' "static/" subdirectories and in STATICFILES_DIRS.
-# Example: "/home/media/media.lawrence.com/static/"
-STATIC_ROOT = path.join(PRJ_PATH, "static")
+# in apps' 'static/' subdirectories and in STATICFILES_DIRS.
+# Example: '/home/media/media.lawrence.com/static/'
+STATIC_ROOT = path.join(PRJ_PATH, 'static')
 
 # URL prefix for static files.
-# Example: "http://media.lawrence.com/static/"
-STATIC_URL = "/static/"
+# Example: 'http://media.lawrence.com/static/'
+STATIC_URL = '/static/'
 
 # Additional locations of static files
 STATICFILES_DIRS = (
-    # Put strings here, like "/home/html/static" or "C:/www/django/static".
+    # Put strings here, like '/home/html/static' or 'C:/www/django/static'.
     # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.
-    path.join(PRJ_PATH, "static"),
+    path.join(PRJ_PATH, 'static'),
 )
 
 # List of finder classes that know how to find static files in
@@ -74,37 +74,37 @@ STATICFILES_FINDERS = (
     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
 )
 
-SECRET_KEY = "vbtge3@fn!73i&1h)g=0&)*b*uc_4+&ury)x)8a*a+-f0fpxe5"
+SECRET_KEY = 'vbtge3@fn!73i&1h)g=0&)*b*uc_4+&ury)x)8a*a+-f0fpxe5'
 
 # List of callables that know how to import templates from various sources.
 TEMPLATE_LOADERS = (
-    "django.template.loaders.filesystem.Loader",
-    "django.template.loaders.app_directories.Loader",
+    'django.template.loaders.filesystem.Loader',
+    'django.template.loaders.app_directories.Loader',
 )
 
 MIDDLEWARE_CLASSES = (
-    "django.middleware.common.CommonMiddleware",
-    "django.contrib.sessions.middleware.SessionMiddleware",
-    "django.middleware.csrf.CsrfViewMiddleware",
-    "django.contrib.auth.middleware.AuthenticationMiddleware",
+    'django.middleware.common.CommonMiddleware',
+    'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.middleware.csrf.CsrfViewMiddleware',
+    'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
 )
 
-ROOT_URLCONF = "urls"
+ROOT_URLCONF = 'urls'
 
 TEMPLATE_DIRS = (
-    path.join(path.dirname(__file__), "templates"),
+    path.join(path.dirname(__file__), 'templates'),
 )
 
 INSTALLED_APPS = (
-    "django.contrib.auth",
-    "django.contrib.contenttypes",
-    "django.contrib.sessions",
-    "django.contrib.sites",
+    'django.contrib.auth',
+    'django.contrib.contenttypes',
+    'django.contrib.sessions',
+    'django.contrib.sites',
     'django.contrib.messages',
-    "django.contrib.admin",
+    'django.contrib.admin',
 
-    "smsgateway",
+    'smsgateway',
 )
 
 # A sample logging configuration. The only tangible logging

@@ -6,7 +6,7 @@ from django.core.management.base import NoArgsCommand
 
 from smsgateway.tasks import send_smses
 
-LOCK_WAIT_TIMEOUT = getattr(settings, "SMSES_LOCK_WAIT_TIMEOUT", -1)
+LOCK_WAIT_TIMEOUT = getattr(settings, 'SMSES_LOCK_WAIT_TIMEOUT', -1)
 
 logger = getLogger(__name__)
 

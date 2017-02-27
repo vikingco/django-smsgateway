@@ -23,7 +23,7 @@ class SMPPBackend(SMSBackend):
     def _initialize(self, sms_request):
         sms_list = self._get_sms_list(sms_request)
         if not len(sms_list):
-            logger.error("Nothing to send. sms_request: %s" % sms_request)
+            logger.error('Nothing to send. sms_request: %s' % sms_request)
             return False
 
         if sms_request.signature:

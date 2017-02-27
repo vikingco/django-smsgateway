@@ -145,7 +145,7 @@ class Client:
             self._socket.connect((self.host, self.port))
             self.state = SMPP_CLIENT_STATE_OPEN
         except socket_error:
-            raise ConnectionError("Connection refused")
+            raise ConnectionError('Connection refused')
 
     def disconnect(self):
         """Disconnect from the SMSC"""
@@ -194,7 +194,7 @@ class Client:
         """Send PDU to the SMSC"""
 
         if self.state not in command_states[p.command]:
-            raise Exception("Command %s failed: %s" % (p.command, descs[SMPP_ESME_RINVBNDSTS]))
+            raise Exception('Command %s failed: %s' % (p.command, descs[SMPP_ESME_RINVBNDSTS]))
 
         self._push_pdu(p)
         logger.debug('Sending %s PDU' % (p.command))
@@ -256,7 +256,7 @@ class Client:
     def _enquire_link_received(self):
         ler = make_pdu('enquire_link_resp')
         self.send_pdu(ler)
-        logger.debug("Link Enuiry...")
+        logger.debug('Link Enuiry...')
 
     def set_message_received_handler(self, func):
         """Set new function to handle message receive event"""

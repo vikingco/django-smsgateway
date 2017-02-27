@@ -25,7 +25,7 @@ def truncate_sms(text, max_length=160):
     if len(text) <= max_length:
         return text
     else:
-        logger.error("Trying to send an SMS that is too long: %s", text)
+        logger.error('Trying to send an SMS that is too long: %s', text)
         return text[:max_length-3] + '...'
 
 
@@ -69,7 +69,7 @@ def parse_sms(content):
     """
     # work with uppercase and single spaces
     content = content.upper().strip()
-    content = sub('\s+', " ", content)
+    content = sub('\s+', ' ', content)
 
     from smsgateway.backends.base import all_hooks
     content = _match_keywords(content, all_hooks)
