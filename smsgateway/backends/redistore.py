@@ -26,18 +26,18 @@ class RedistoreBackend(SMSBackend):
         self.sent_smses = []
 
     def prefix(self, key):
-        return '%s%s' % (self.redis_key_prefix, key)
+        return '{}{}'.format(self.redis_key_prefix, key)
 
     def _initialize(self, sms_request, account_dict):
         sms_list = self._get_sms_list(sms_request)
         if not len(sms_list):
-            logger.error('Nothing to send. sms_request: %s' % sms_request)
+            logger.error('Nothing to send. sms_request: {}'.format(sms_request))
             return False
 
         if sms_request.signature:
             self.sender = sms_request.signature
         else:
-            self.sender = u'[%s]' % self.get_slug()
+            self.sender = u'[{}]'.format(self.get_slug())
 
         self.sms_data_iter = SMSDataIterator(sms_list, account_dict)
         self.redis_key_prefix = account_dict['key_prefix']
@@ -66,13 +66,13 @@ class RedistoreBackend(SMSBackend):
 
         pipe = self.redis_conn.pipeline(transaction=False)
         key = md5(self.reference).hexdigest()
-        queue_key = self.prefix('smsreq:%s' % key)
+        queue_key = self.prefix('smsreq:{}'.format(key))
         allqueues_key = self.prefix('outq')
 
         # feed the pipe
         for idx, sms_data in enumerate(self.sms_data_iter):
             source_sms = sms_data.pop('source_sms')
-            sms_key = self.prefix('sms:%s:%d' % (key, idx))
+            sms_key = self.prefix('sms:{}:{}'.format((key, idx)))
             pipe.hmset(sms_key, sms_data)
             pipe.rpush(queue_key, sms_key)
             sent_sms = {

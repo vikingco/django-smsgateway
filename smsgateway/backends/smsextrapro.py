@@ -24,7 +24,7 @@ class SmsExtraProBackend(SMSBackend):
             'Signature': signature,
             'Message': msg,
         })
-        return 'http://www.smsextrapro.com/HttpSend/HttpSend.php?%s' % querystring
+        return 'http://www.smsextrapro.com/HttpSend/HttpSend.php?{}'.format(querystring)
 
     def validate_send_result(self, result):
         return 'Ok' in result

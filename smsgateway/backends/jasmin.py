@@ -26,7 +26,7 @@ class JasminBackend(SMSBackend):
             'content': msg,
             'coding': 3,  # latin-1
         })
-        return u'%s?%s' % (account_dict['url'], querystring)
+        return u'{}?{}'.format(account_dict['url'], querystring)
 
     def validate_send_result(self, result):
         return 'Success' in result

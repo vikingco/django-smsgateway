@@ -139,8 +139,6 @@ class Client:
     def connect(self):
         """Connect to SMSC"""
 
-        logger.debug('Connecting to %s:%s...' % (self.host, self.port))
-
         try:
             self._socket.connect((self.host, self.port))
             self.state = SMPP_CLIENT_STATE_OPEN
@@ -194,10 +192,9 @@ class Client:
         """Send PDU to the SMSC"""
 
         if self.state not in command_states[p.command]:
-            raise Exception('Command %s failed: %s' % (p.command, descs[SMPP_ESME_RINVBNDSTS]))
+            raise Exception('Command {} failed: {}'.format(p.command, descs[SMPP_ESME_RINVBNDSTS]))
 
         self._push_pdu(p)
-        logger.debug('Sending %s PDU' % (p.command))
 
         generated = p.generate()
 
@@ -228,14 +225,13 @@ class Client:
         logger.debug(' '.join(
                 [str(x) for x in ['<<', b2a_hex(raw_pdu), len(raw_pdu), 'bytes']]))
 
-        cmd = PDU.extract_command(raw_pdu)
-        logger.debug('Read %s PDU' % cmd)
+        PDU.extract_command(raw_pdu)
 
         p = parse_pdu(raw_pdu)
         self._push_pdu(p)
 
         if p.is_error():
-            raise Exception('(%s) %s: %s' % (p.status, p.command, descs[p.status]))
+            raise Exception('({}) {}: {}'.format(p.status, p.command, descs[p.status]))
         elif p.command in state_setters.keys():
             self.state = state_setters[p.command]
 
@@ -321,6 +317,7 @@ class Client:
 
 class ConnectionError(Exception):
     """Connection error"""
+
 
 #
 # Main block for testing

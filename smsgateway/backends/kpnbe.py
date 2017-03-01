@@ -45,4 +45,4 @@ class KPNBEBackend(SMSBackend):
             'msg': msg,
             'msgtype': 'ISO-8859-1'
         })
-        return '%s?%s' % (endpoint, querystring)
+        return '{}?{}'.format(endpoint, querystring)

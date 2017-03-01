@@ -28,8 +28,8 @@ class SMS(models.Model):
         verbose_name = ugettext_lazy(u'SMS')
         verbose_name_plural = ugettext_lazy(u'SMSes')
 
-    def __unicode_ugettext_lazy(self):
-        return u'SMS: "%s" from "%s"' % (self.content, self.sender)
+    def __unicode__(self):
+        return u'SMS: "{}" from "{}"'.format(self.content, self.sender)
 
 
 class QueuedSMS(models.Model):

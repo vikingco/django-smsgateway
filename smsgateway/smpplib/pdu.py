@@ -180,7 +180,7 @@ def factory(command_name, **args):
     elif command_name == 'enquire_link_resp':
         cc = EnquireLinkResp
     if not cc:
-        raise ValueError("Command '%s' is not supported" % command_name)
+        raise ValueError("Command '{}' is not supported".format(command_name))
 
     return cc(command_name, **(args))
 
@@ -241,7 +241,7 @@ class PDU:
         try:
             desc = descs[status]
         except KeyError:
-            return 'Description for status 0x%x not found!' % status
+            return 'Description for status 0x{} not found!'.format(status)
 
         return desc
 

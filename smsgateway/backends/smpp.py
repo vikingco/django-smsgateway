@@ -23,13 +23,13 @@ class SMPPBackend(SMSBackend):
     def _initialize(self, sms_request):
         sms_list = self._get_sms_list(sms_request)
         if not len(sms_list):
-            logger.error('Nothing to send. sms_request: %s' % sms_request)
+            logger.error('Nothing to send. sms_request: {}'.format(sms_request))
             return False
 
         if sms_request.signature:
             self.sender = sms_request.signature
         else:
-            self.sender = u'[%s]' % self.get_slug()
+            self.sender = u'[{}]'.format(self.get_slug())
 
         self.sms_data_iter = SMSDataIterator(sms_list)
         return True
@@ -50,9 +50,6 @@ class SMPPBackend(SMSBackend):
     def _connect(self, conf):
         self.client = client.Client(conf['host'], conf['port'])
         self.client.connect()
-        logger.debug("Connecting to SMSC '%(host)s:%(port)s', "
-                     "System ID '%(system_id)s', "
-                     "System Type '%(system_type)s'" % conf)
         self.client.set_message_received_handler(self._send_recv_loop)
         try:
             self.client.bind_transceiver(**conf)

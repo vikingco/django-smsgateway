@@ -26,7 +26,7 @@ class SMSBackend(object):
         SMS table for each successful attempt.
         """
         capacity = self.get_url_capacity()
-        sender = u'[%s]' % self.get_slug() if not sms_request.signature else sms_request.signature
+        sender = u'[{}]'.format(self.get_slug()) if not sms_request.signature else sms_request.signature
         reference = self.get_send_reference(sms_request)
         all_succeeded = True
 
@@ -45,7 +45,6 @@ class SMSBackend(object):
         # Send each batch
         for request in requests:
             url = self.get_send_url(request, account_dict)
-            logger.debug('Sending SMS using: %s' % url)
 
             # Make request to provider
             result = u''
@@ -56,7 +55,6 @@ class SMSBackend(object):
                     sock.close()
                 except:
                     return False
-            logger.debug('Result: %s' % result)
 
             # Validate result, create log entry if successful
             if not self.validate_send_result(result):

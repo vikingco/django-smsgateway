@@ -13,7 +13,7 @@ class FileBackend(SMSBackend):
         path = account_dict['path']
 
         f = open(path, 'ab', 'utf8')
-        f.write(u'%s,%s,%s\n' % (sms_request.to[0], sms_request.msg, sms_request.signature))
+        f.write(u'{},{},{}\n'.format(sms_request.to[0], sms_request.msg, sms_request.signature))
         f.close()
 
         return None

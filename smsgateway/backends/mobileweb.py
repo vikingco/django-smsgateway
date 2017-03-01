@@ -26,7 +26,7 @@ class MobileWebBackend(SMSBackend):
             'sid': account_dict['sid'],
             'msgcontent': msg,
         })
-        return u'http://gateway.mobileweb.be/smsin.asp?%s' % querystring
+        return u'http://gateway.mobileweb.be/smsin.asp?{}'.format(querystring)
 
     def validate_send_result(self, result):
         return 'accepted' in result

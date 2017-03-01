@@ -46,8 +46,6 @@ def send_smses(send_deferred=False, backend=None, limit=None):
         if isinstance(limit, int):
             to_send = to_send[:limit]
 
-        logger.info('Trying to send %i messages.' % to_send.count())
-
         # Send each SMS
         for sms in to_send:
             if backend:
@@ -56,12 +54,10 @@ def send_smses(send_deferred=False, backend=None, limit=None):
                 sms_using = None if sms.using == '__none__' else sms.using
             if send(sms.to, sms.content, sms.signature, sms_using, sms.reliable):
                 # Successfully sent, remove from queue
-                logger.info('SMS to %s sent.' % sms.to)
                 sms.delete()
                 successes += 1
             else:
                 # Failed to send, defer SMS
-                logger.info('SMS to %s failed.' % sms.to)
                 sms.defer()
                 failures += 1
     finally:
@@ -95,7 +91,7 @@ def process_smses(smsk, sms_id, account_slug):
 
 def recv_smses(account_slug='redistore', async=False):
     def _(key):
-        return '%s%s' % (racc['key_prefix'], key)
+        return '{}{}'.format(racc['key_prefix'], key)
 
     count = 0
     racc = get_account(account_slug)

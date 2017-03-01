@@ -219,7 +219,7 @@ def get_command_name(code):
     try:
         return commands.keys()[commands.values().index(code)]
     except ValueError:
-        raise UnknownCommandError("Unknown SMPP command code '0x%x'" % code)
+        raise UnknownCommandError("Unknown SMPP command code '0x{}'".format(code))
 
 
 def get_command_code(name):
@@ -229,7 +229,7 @@ def get_command_code(name):
     try:
         return commands[name]
     except KeyError:
-        raise UnknownCommandError("Unknown SMPP command name '%s'" % name)
+        raise UnknownCommandError("Unknown SMPP command name '{}'".format(name))
 
 
 def get_optional_name(code):
@@ -239,7 +239,7 @@ def get_optional_name(code):
     try:
         return optional_params.keys()[optional_params.values().index(code)]
     except ValueError:
-        raise UnknownCommandError("Unknown SMPP command code '0x%x'" % code)
+        raise UnknownCommandError("Unknown SMPP command code '0x{}'".format(code))
 
 
 def get_optional_code(name):
@@ -249,7 +249,7 @@ def get_optional_code(name):
     try:
         return optional_params[name]
     except KeyError:
-        raise UnknownCommandError("Unknown SMPP command name '%s'" % name)
+        raise UnknownCommandError("Unknown SMPP command name '{}'".format(name))
 
 
 class Command(PDU):
@@ -538,12 +538,12 @@ class Param:
             raise KeyError('Parameter Type not defined')
 
         if args.get('type') not in [int, str, ostr, flag]:
-            raise ValueError('Invalid parameter type: %s' % args.get('type'))
+            raise ValueError('Invalid parameter type: {}'.format(args.get('type')))
 
         valid_keys = ['type', 'size', 'min', 'max', 'len_field']
         for k in args.keys():
             if k not in valid_keys:
-                raise KeyError("Key '%s' not allowed here" % k)
+                raise KeyError("Key '{}' not allowed here".format(k))
 
         self.type = args.get('type')
 

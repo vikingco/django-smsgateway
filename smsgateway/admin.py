@@ -9,6 +9,7 @@ class SMSAdmin(admin.ModelAdmin):
     search_fields = ('sender', 'to', 'content',)
     list_filter = ('operator', 'direction', 'gateway', 'backend')
 
+
 admin.site.register(SMS, SMSAdmin)
 
 
@@ -16,5 +17,6 @@ class QueuedSMSAdmin(admin.ModelAdmin):
     list_display = ('to', 'content', 'created', 'using', 'priority')
     search_fields = ('to', 'content')
     list_filter = ('created', 'priority', 'using')
+
 
 admin.site.register(QueuedSMS, QueuedSMSAdmin)
