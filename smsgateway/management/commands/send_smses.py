@@ -4,7 +4,7 @@ from optparse import make_option
 from django.conf import settings
 from django.core.management.base import NoArgsCommand
 
-from smsgateway.tasks import send_smses
+from smsgateway.tasks import _send_smses as send_smses
 
 LOCK_WAIT_TIMEOUT = getattr(settings, 'SMSES_LOCK_WAIT_TIMEOUT', -1)
 
