@@ -16,3 +16,13 @@ class SMSRequest(object):
         self.signature = signature[:16] if signature[1:].isdigit() else signature[:11]
         self.reliable = reliable
         self.reference = reference
+
+
+class JasminSMSRequest(SMSRequest):
+    def __init__(self, to, msg, signature, reliable=False, reference=None):
+        """
+        The Jasmin backend can handle longer messages so we send truncate_sms a bigger max_length here
+        """
+
+        super(JasminSMSRequest, self).__init__(to, '', signature, reliable, reference)
+        self.msg = truncate_sms(msg, 500)
