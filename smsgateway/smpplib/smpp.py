@@ -22,7 +22,8 @@
 
 """SMPP module"""
 
-import pdu  # noqa
+from __future__ import absolute_import
+from . import pdu  # noqa
 
 
 smpp_instance = None

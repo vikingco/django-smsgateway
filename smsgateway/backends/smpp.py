@@ -1,5 +1,6 @@
 # -*- encoding: utf-8 -*-
 
+from __future__ import absolute_import
 from datetime import datetime
 from logging import getLogger
 
@@ -69,7 +70,7 @@ class SMPPBackend(SMSBackend):
         except IndexError:
             logger.exception('Sent SMS List empty')
         try:
-            sms_data = self.sms_data_iter.next()
+            sms_data = next(self.sms_data_iter)
         except StopIteration:
             return False
         else:
@@ -93,7 +94,7 @@ class SMPPBackend(SMSBackend):
     def send(self, sms_request, account_dict):
         """SMPPBackend instances' entry point"""
         self._initialize(sms_request)
-        sms_data = self.sms_data_iter.next()
+        sms_data = next(self.sms_data_iter)
         self._connect(account_dict)
         self._send_sms(sms_data)
         self.client.listen()

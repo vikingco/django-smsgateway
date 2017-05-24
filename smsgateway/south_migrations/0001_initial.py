@@ -1,4 +1,5 @@
 
+from __future__ import absolute_import
 from south.db import db
 from django.db import models
 from smsgateway.models import *

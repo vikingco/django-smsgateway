@@ -1,3 +1,4 @@
+from __future__ import absolute_import
 from datetime import datetime
 from re import findall
 
@@ -8,6 +9,7 @@ from smsgateway import get_account, send, send_queued
 from smsgateway.models import SMS
 from smsgateway.backends.base import SMSBackend
 from smsgateway.utils import check_cell_phone_number
+from six.moves import map
 
 
 class MobileWebBackend(SMSBackend):
@@ -43,7 +45,7 @@ class MobileWebBackend(SMSBackend):
             return HttpResponse('OK')
 
         # Parse and process message
-        year, month, day, hour, minute, second, ms = map(int, findall(r'(\d+)', request_dict['SendDateTime']))
+        year, month, day, hour, minute, second, ms = list(map(int, findall(r'(\d+)', request_dict['SendDateTime'])))
         sms_dict = {
             'sent': datetime(year, month, day, hour, minute, second),
             'content': request_dict['MsgeContent'],

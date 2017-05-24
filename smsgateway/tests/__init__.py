@@ -1,6 +1,8 @@
+from __future__ import absolute_import
 from os import chdir, path, getcwd, environ
 from sys import path as sys_path
 from unittest import TestSuite, TestLoader
+from six.moves import map
 
 
 def setup_django_settings():
@@ -28,7 +30,7 @@ def suite():
         from django.apps import apps
         from django.conf import settings
         settings.INSTALLED_APPS += ['smsgateway.tests']
-        map(apps.load_app, settings.INSTALLED_APPS)
+        list(map(apps.load_app, settings.INSTALLED_APPS))
 
     from smsgateway.tests import tasks
     from smsgateway.tests.backends import smpp, redistore

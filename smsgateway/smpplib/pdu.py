@@ -22,6 +22,7 @@
 
 """PDU module"""
 
+from __future__ import absolute_import
 from struct import pack, unpack
 
 #
@@ -139,9 +140,9 @@ sequence = 0
 def factory(command_name, **args):
     """Return instance of a specific command class"""
 
-    from command import (BindTransmitter, BindTransmitterResp, BindReceiver, BindReceiverResp, BindTransceiver,
-                         BindTransceiverResp, DataSM, DataSMResp, GenericNAck, SubmitSM, SubmitSMResp, DeliverSM,
-                         DeliverSMResp, Unbind, UnbindResp, EnquireLink, EnquireLinkResp)
+    from .command import (BindTransmitter, BindTransmitterResp, BindReceiver, BindReceiverResp, BindTransceiver,
+                          BindTransceiverResp, DataSM, DataSMResp, GenericNAck, SubmitSM, SubmitSMResp, DeliverSM,
+                          DeliverSMResp, Unbind, UnbindResp, EnquireLink, EnquireLinkResp)
 
     cc = None
 
@@ -218,7 +219,7 @@ class PDU:
     def is_response(self):
         """Return True if this is a response PDU, False otherwise"""
 
-        from command import get_command_code
+        from .command import get_command_code
         if get_command_code(self.command) & 0x80000000:
             return True
 
@@ -277,7 +278,7 @@ class PDU:
 
         code = unpack('>L', pdu[4:8])[0]
 
-        from command import get_command_name
+        from .command import get_command_name
 
         return get_command_name(code)
 
@@ -293,7 +294,7 @@ class PDU:
 
         self._length = len(body) + 16
 
-        from command import get_command_code
+        from .command import get_command_code
 
         command_code = get_command_code(self.command)
 

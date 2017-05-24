@@ -1,8 +1,10 @@
+from __future__ import absolute_import
 from logging import getLogger
 from phonenumbers import parse, format_number, PhoneNumberFormat
 from re import sub
 
 from django.conf import settings
+from six import iteritems
 
 from smsgateway import get_account
 
@@ -45,7 +47,7 @@ def _match_keywords(content, hooks):
     """
     # Go throught the different hooks
     matched = False
-    for keyword, hook in hooks.iteritems():
+    for keyword, hook in iteritems(hooks):
         # If the keyword of this hook matches
         if content.startswith(keyword + ' ') or keyword == content:
             matched = True

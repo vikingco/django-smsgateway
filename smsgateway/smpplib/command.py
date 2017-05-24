@@ -22,11 +22,13 @@
 
 """SMPP Commands module"""
 
+from __future__ import absolute_import
 from struct import pack, unpack
 
-from smpp import UnknownCommandError, next_seq
-from pdu import PDU, SMPP_ESME_ROK
-from ptypes import ostr, flag
+from .smpp import UnknownCommandError, next_seq
+from .pdu import PDU, SMPP_ESME_ROK
+from .ptypes import ostr, flag
+from six.moves import map
 
 
 #
@@ -217,7 +219,7 @@ def get_command_name(code):
     UnkownCommandError exception"""
 
     try:
-        return commands.keys()[commands.values().index(code)]
+        return list(commands.keys())[list(commands.values()).index(code)]
     except ValueError:
         raise UnknownCommandError("Unknown SMPP command code '0x{}'".format(code))
 
@@ -237,7 +239,7 @@ def get_optional_name(code):
     UnkownCommandError exception"""
 
     try:
-        return optional_params.keys()[optional_params.values().index(code)]
+        return list(optional_params.keys())[list(optional_params.values()).index(code)]
     except ValueError:
         raise UnknownCommandError("Unknown SMPP command code '0x{}'".format(code))
 
@@ -582,7 +584,7 @@ class BindTransmitter(Command):
 
         Command.__init__(self, command, **(args))
 
-        self._set_vars(**({}.fromkeys(self.params.keys())))
+        self._set_vars(**({}.fromkeys(list(self.params.keys()))))
 
         self.interface_version = SMPP_VERSION_34
 
@@ -610,7 +612,7 @@ class BindTransmitterResp(Command):
 
         Command.__init__(self, command)
 
-        self._set_vars(**({}.fromkeys(self.params.keys())))
+        self._set_vars(**({}.fromkeys(list(self.params.keys()))))
 
 
 class BindReceiverResp(BindTransmitterResp):
@@ -700,7 +702,7 @@ class DataSM(Command):
 
         Command.__init__(self, command)
 
-        self._set_vars(**({}.fromkeys(self.params.keys())))
+        self._set_vars(**({}.fromkeys(list(self.params.keys()))))
 
 
 class DataSMResp(Command):
@@ -904,7 +906,7 @@ class SubmitSM(Command):
 
         Command.__init__(self, command, **(args))
 
-        self._set_vars(**({}.fromkeys(self.params.keys())))
+        self._set_vars(**({}.fromkeys(list(self.params.keys()))))
 
     def prep(self):
         """Prepare to generate binary data"""
@@ -930,7 +932,7 @@ class SubmitSMResp(Command):
 
         Command.__init__(self, command)
 
-        self._set_vars(**({}.fromkeys(self.params.keys())))
+        self._set_vars(**({}.fromkeys(list(self.params.keys()))))
 
 
 class DeliverSM(SubmitSM):
