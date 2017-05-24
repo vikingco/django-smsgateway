@@ -1,3 +1,4 @@
+from __future__ import absolute_import
 from django import forms
 from django.http import Http404
 from django.conf import settings

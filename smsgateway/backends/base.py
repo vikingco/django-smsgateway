@@ -1,4 +1,5 @@
-from urllib2 import urlopen
+from __future__ import absolute_import
+
 from logging import getLogger
 from datetime import datetime
 from re import sub
@@ -10,6 +11,9 @@ from django.core.urlresolvers import get_callable
 from smsgateway.enums import DIRECTION_OUTBOUND
 from smsgateway.models import SMS
 from smsgateway.sms import SMSRequest
+
+from six import iteritems
+from six.moves.urllib.request import urlopen
 
 logger = getLogger(__name__)
 
@@ -126,7 +130,7 @@ class SMSBackend(object):
         """
         # Go throught the different hooks
         matched = False
-        for keyword, hook in hooks.iteritems():
+        for keyword, hook in iteritems(hooks):
             # If the keyword of this hook matches
             if content.startswith(keyword + ' ') or content == keyword:
                 matched = True

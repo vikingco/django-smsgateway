@@ -1,7 +1,9 @@
+from __future__ import absolute_import
 from django.test import TestCase as DjangoTestCase
 from smsgateway.backends.smpp import SMPPBackend
 from smsgateway.sms import SMSRequest
 from smsgateway.utils import check_cell_phone_number, truncate_sms
+from six.moves import zip
 
 
 req_data = {
@@ -17,7 +19,7 @@ class SMPPBackendTestCase(DjangoTestCase):
 
     def test_init(self):
         for key in ['client', 'sender', 'sms_data_iter', 'sent_smses']:
-            assert key in self.backend.__dict__.keys()
+            assert key in list(self.backend.__dict__.keys())
 
     def test_initialize_without_sms_request(self):
         assert self.backend._initialize(None) is False

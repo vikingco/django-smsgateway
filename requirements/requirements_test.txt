@@ -1,14 +1,11 @@
 # Test framework
-# We pinned pytest to 2.x because of an apparent incompatibility between pytest>=3 and pytest-django. We used the
-# same version in mvne-platform at the time of writing. For more context, see our Slack history at
-# https://vikingco.slack.com/archives/backend/p1474619771001212
-pytest==2.8.3
-pytest-django==2.9.1
-pytest-cov==2.3.1
+pytest==3.1.0
+pytest-django==3.1.2
+pytest-cov==2.5.1
 
 # Coverage uploads
 coveralls
-coverage==3.7.1
+coverage==4.4.1
 docopt==0.6.2
 requests==2.9.1
 
@@ -18,12 +15,9 @@ fake-factory==0.6.0
 factory-boy==2.6.1
 django-factory-boy==1.0.0
 
-# For provider_kbc
-beautifulsoup==3.2.1
-
 # Flake8 checks for PEP-8 formatting and code quality
 flake8==3.3.0
-enum34==1.1.2
+enum34==1.1.6
 configparser==3.5.0
 pyflakes==1.5.0
 pep8==1.7.0

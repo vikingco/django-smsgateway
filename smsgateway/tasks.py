@@ -1,3 +1,4 @@
+from __future__ import absolute_import
 from datetime import datetime
 from logging import getLogger
 from redis import ConnectionPool, Redis

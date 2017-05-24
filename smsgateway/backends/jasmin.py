@@ -1,6 +1,6 @@
+from __future__ import absolute_import
 from datetime import datetime
 
-from urllib2 import urlopen
 from django.http import HttpResponse
 from django.utils.http import urlencode
 
@@ -11,6 +11,8 @@ from smsgateway.utils import check_cell_phone_number
 from smsgateway.sms import SMSRequest
 
 from smsgateway.enums import DIRECTION_OUTBOUND
+
+from six.moves.urllib.request import urlopen
 
 
 class JasminBackend(SMSBackend):
