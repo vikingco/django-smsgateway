@@ -4,6 +4,8 @@ from re import sub
 
 from django.conf import settings
 
+from smsgateway import get_account
+
 logger = getLogger(__name__)
 
 
@@ -20,7 +22,11 @@ def check_cell_phone_number(number):
     return format_number(parsed_number, PhoneNumberFormat.E164)
 
 
-def truncate_sms(text, max_length=160):
+def get_max_msg_length():
+    return get_account().get('max_msg_length')
+
+
+def truncate_sms(text, max_length=get_max_msg_length() or 160):
     text = text.strip()
     if len(text) <= max_length:
         return text

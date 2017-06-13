@@ -5,7 +5,7 @@ from django.shortcuts import render_to_response
 from django.template.context import RequestContext
 from django.contrib.admin.views.decorators import staff_member_required
 
-from smsgateway import send
+from smsgateway import send, __version__
 from smsgateway.backends import get_backend
 
 accounts = getattr(settings, 'SMSGATEWAY_ACCOUNTS', {})
@@ -42,7 +42,10 @@ def backend_debug(request):
     else:
         form = BackendDebugForm()
 
-    context.update({'form': form})
+    context.update({
+        'form': form,
+        'version': __version__,
+    })
     return render_to_response(
         'smsgateway/backend_debug.html',
         context,

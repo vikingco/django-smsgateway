@@ -8,7 +8,7 @@ from smsgateway import get_account, send, send_queued
 from smsgateway.models import SMS
 from smsgateway.backends.base import SMSBackend
 from smsgateway.utils import check_cell_phone_number
-from smsgateway.sms import JasminSMSRequest
+from smsgateway.sms import SMSRequest
 
 from smsgateway.enums import DIRECTION_OUTBOUND
 
@@ -28,7 +28,7 @@ class JasminBackend(SMSBackend):
         # Split SMSes into batches depending on the capacity
         requests = []
         while len(sms_request.to) > 0:
-            requests.append(JasminSMSRequest(
+            requests.append(SMSRequest(
                 sms_request.to[:capacity],
                 sms_request.msg,
                 sms_request.signature,

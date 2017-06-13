@@ -1,4 +1,4 @@
-__version__ = '2.1.8'
+__version__ = '2.1.9'
 
 
 def get_account(using=None):
@@ -26,14 +26,10 @@ def send(to, msg, signature, using=None, reliable=False):
         return
 
     from smsgateway.backends import get_backend
-    from smsgateway.sms import SMSRequest, JasminSMSRequest
+    from smsgateway.sms import SMSRequest
     account_dict = get_account(using)
     backend = get_backend(account_dict['backend'])
-    # jasmin backend allows longer messages so it uses a subclass of SMSRequest to set a bigger max_length
-    if account_dict['backend'] == 'jasmin':
-        sms_request = JasminSMSRequest(to, msg, signature, reliable=reliable)
-    else:
-        sms_request = SMSRequest(to, msg, signature, reliable=reliable)
+    sms_request = SMSRequest(to, msg, signature, reliable=reliable)
     return backend.send(sms_request, account_dict)
 
 
