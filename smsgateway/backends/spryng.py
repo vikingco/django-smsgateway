@@ -40,7 +40,7 @@ class SpryngBackend(SMSBackend):
             'ROUTE': account_dict.get('SMSTYPE', 'BUSINESS'),
             'ALLOWLONG': '0',
         })
-        return 'https://www.spryng.nl/send.php?{}'.format(querystring)
+        return 'https://api.spryngsms.com/api/send.php?{}'.format(querystring)
 
     def get_slug(self):
         return 'spryng'
