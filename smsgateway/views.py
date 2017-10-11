@@ -1,8 +1,7 @@
 from django import forms
 from django.http import Http404
 from django.conf import settings
-from django.shortcuts import render_to_response
-from django.template.context import RequestContext
+from django.shortcuts import render
 from django.contrib.admin.views.decorators import staff_member_required
 
 from smsgateway import send, __version__
@@ -46,11 +45,7 @@ def backend_debug(request):
         'form': form,
         'version': __version__,
     })
-    return render_to_response(
-        'smsgateway/backend_debug.html',
-        context,
-        context_instance=RequestContext(request)
-    )
+    return render(request, 'smsgateway/backend_debug.html', context)
 
 
 def backend_handle_incoming(request, backend_name):
