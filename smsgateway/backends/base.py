@@ -1,4 +1,4 @@
-from urllib2 import urlopen
+from six.moves.urllib.request import urlopen
 from logging import getLogger
 from datetime import datetime
 from re import sub
