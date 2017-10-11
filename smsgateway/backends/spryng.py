@@ -1,12 +1,14 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import
+
+from builtins import chr
+from past.builtins import basestring
+
 from django.http import HttpResponse
 from django.utils.http import urlencode
 from django.conf import settings
 
 from smsgateway.backends.base import SMSBackend
-from six import string_types
-from builtins import chr
 
 
 class SpryngBackend(SMSBackend):
@@ -19,7 +21,7 @@ class SpryngBackend(SMSBackend):
         except:
             pass
 
-        if isinstance(sms_request.to, string_types):
+        if isinstance(sms_request.to, basestring):
             sms_request.to = [sms_request.to]
 
         # Spryng doesn't accept the prefix '+'

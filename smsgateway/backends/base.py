@@ -1,5 +1,6 @@
 from __future__ import absolute_import
 
+from six.moves.urllib.request import urlopen
 from logging import getLogger
 from datetime import datetime
 from re import sub

@@ -1,8 +1,12 @@
+# -*- coding: utf-8 -*-
 from __future__ import absolute_import
-from datetime import datetime
 
+from datetime import datetime
+from logging import getLogger
+
+from six.moves.urllib.request import urlopen
+from six.moves.urllib.parse import urlencode
 from django.http import HttpResponse
-from django.utils.http import urlencode
 
 from smsgateway import get_account, send, send_queued
 from smsgateway.models import SMS
@@ -12,7 +16,7 @@ from smsgateway.sms import SMSRequest
 
 from smsgateway.enums import DIRECTION_OUTBOUND
 
-from six.moves.urllib.request import urlopen
+logger = getLogger(__name__)
 
 
 class JasminBackend(SMSBackend):
@@ -44,11 +48,11 @@ class JasminBackend(SMSBackend):
             url = self.get_send_url(request, account_dict)
 
             # Make request to provider
-            result = u''
+            result = ''
             if url is not None:
                 try:
                     sock = urlopen(url)
-                    result = sock.read()
+                    result = sock.read().decode('utf_8')
                     sock.close()
                 except:
                     return False
@@ -72,10 +76,11 @@ class JasminBackend(SMSBackend):
     def get_send_url(self, sms_request, account_dict):
         # Encode message
         msg = sms_request.msg
+
         try:
             msg = msg.encode('latin-1')
-        except:
-            pass
+        except UnicodeEncodeError as e:
+            logger.warning('Error encoding message: {}'.format(e))
 
         querystring = urlencode({
             'username': account_dict['username'],
