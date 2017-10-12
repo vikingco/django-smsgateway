@@ -1,3 +1,4 @@
+from __future__ import absolute_import
 from codecs import open
 
 from django.http import HttpResponse

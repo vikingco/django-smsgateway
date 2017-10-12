@@ -1,5 +1,6 @@
 # -*- encoding: utf-8 -*-
 
+from __future__ import absolute_import
 from datetime import datetime
 from hashlib import md5
 from logging import getLogger

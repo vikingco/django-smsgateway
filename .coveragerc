@@ -1,11 +1,16 @@
 [run]
 branch = True
 omit =
+    *tests*
+
+    # smpplib
+    #*/smpplib*
+
     # Ignore migrations
     *migrations*
 
     # Ignore deployment files
-    deployment/*
+    requirements/*
 
     # Ignore docs
     docs*

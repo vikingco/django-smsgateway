@@ -20,7 +20,8 @@
 # Modified by Yusuf Kaka <yusufk at gmail>
 # Added support for Optional TLV's
 
-import smpp  # noqa
-import pdu  # noqa
-import command  # noqa
-import client  # noqa
+from __future__ import absolute_import
+from . import smpp  # noqa
+from . import pdu  # noqa
+from . import command  # noqa
+from . import client  # noqa
