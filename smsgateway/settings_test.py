@@ -48,6 +48,12 @@ STATIC_URL = ''
 
 SECRET_KEY = 'vbtge3@fn!73i&1h)g=0&)*b*uc_4+&ury)x)8a*a+-f0fpxe5'
 
+TEMPLATES = [
+    {
+        'BACKEND': 'django.template.backends.django.DjangoTemplates',
+    },
+]
+
 # List of callables that know how to import templates from various sources.
 TEMPLATE_LOADERS = [
     'django.template.loaders.filesystem.Loader',
@@ -59,7 +65,7 @@ MIDDLEWARE_CLASSES = [
     'django.contrib.sessions.middleware.SessionMiddleware',
 ]
 
-ROOT_URLCONF = 'smsgateway.tests.urls'
+ROOT_URLCONF = 'smsgateway.urls'
 
 TEMPLATE_DIRS = [
     # Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".
@@ -74,7 +80,6 @@ INSTALLED_APPS = [
     'django.contrib.sites',
 
     'smsgateway',
-    'smsgateway.tests',
 ]
 
 SMSGATEWAY_HOOK = {

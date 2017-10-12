@@ -1,0 +1,6 @@
+version: "3"
+services:
+  sms:
+    build: .
+    volumes:
+      - .:/app
