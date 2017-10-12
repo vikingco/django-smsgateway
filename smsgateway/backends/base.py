@@ -14,7 +14,6 @@ from smsgateway.models import SMS
 from smsgateway.sms import SMSRequest
 
 from six import iteritems
-from six.moves.urllib.request import urlopen
 
 logger = getLogger(__name__)
 
