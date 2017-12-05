@@ -1,4 +1,4 @@
-Django>=1.9.7
+Django==1.11.5
 
 django-statsd-unleashed>=1.0.1
 statsd>=2.1.2
