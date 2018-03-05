@@ -3,6 +3,7 @@ from logging import getLogger
 from phonenumbers import parse, format_number, PhoneNumberFormat
 from re import sub
 
+from django import get_version as django_version
 from django.conf import settings
 from six import iteritems
 
@@ -82,3 +83,10 @@ def parse_sms(content):
     from smsgateway.backends.base import all_hooks
     content = _match_keywords(content, all_hooks)
     return content.split(' ')
+
+
+def is_pre_django2():
+    """
+    Quick check if the used django version is pre 2.0
+    """
+    return tuple(int(n) for n in django_version().split('.')) <= (2, 0, 0)

@@ -1,19 +1,24 @@
 from __future__ import absolute_import
 
-from six.moves.urllib.request import urlopen
-from logging import getLogger
 from datetime import datetime
+from logging import getLogger
 from re import sub
+from six import iteritems
+from six.moves.urllib.request import urlopen
 
 from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
-from django.core.urlresolvers import get_callable
 
 from smsgateway.enums import DIRECTION_OUTBOUND
 from smsgateway.models import SMS
 from smsgateway.sms import SMSRequest
+from smsgateway.utils import is_pre_django2
 
-from six import iteritems
+if is_pre_django2():
+    from django.core.urlresolvers import get_callable
+else:
+    from django.urls import get_callable
+
 
 logger = getLogger(__name__)
 
