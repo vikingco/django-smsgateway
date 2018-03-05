@@ -1,6 +1,11 @@
 from __future__ import absolute_import
 from django.conf import settings
-from django.core.urlresolvers import get_mod_func
+from smsgateway.utils import is_pre_django2
+if is_pre_django2():
+    from django.core.urlresolvers import get_mod_func
+else:
+    from django.urls import get_mod_func
+
 
 REGISTRY = {}
 
