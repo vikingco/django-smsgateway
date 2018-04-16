@@ -13,6 +13,7 @@ matrix:
     - env: DJANGO='>=2.0,<2.1'
       python: "2.7.13"
 install:
+   - pip install --upgrade pip
    - pip install -e .
    - pip install -r requirements/requirements_test.txt
    - pip install "Django${DJANGO}"
