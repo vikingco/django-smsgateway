@@ -58,4 +58,4 @@ def backend_handle_incoming(request, backend_name):
     b = get_backend(backend_name)
     if b is None:
         raise Http404
-    return b.handle_incoming(request)
+    return b.handle_incoming(request, reply_using='trex')
