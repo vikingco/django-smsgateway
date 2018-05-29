@@ -6,6 +6,7 @@ pytest-socket==0.2.0
 pbr==4.0.2
 py==1.5.3
 python-dateutil==2.7.3
+funcsigs==1.0.2
 
 # Coverage uploads
 coverage==4.4.1

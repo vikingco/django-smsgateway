@@ -4,3 +4,9 @@ services:
     build: .
     volumes:
       - .:/app
+  sms-py2:
+    build:
+      context: .
+      dockerfile: Dockerfile.py2
+    volumes:
+      - .:/app
