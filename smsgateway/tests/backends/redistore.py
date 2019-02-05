@@ -9,7 +9,7 @@ from six.moves import zip
 
 
 req_data = {
-    'to': '+32000000001;+32000000002;+32000000003',
+    'to': '32045000001;32045000002;32045000003',
     'msg': 'text of the message',
     'signature': 'cropped to 11 chars'
 }
