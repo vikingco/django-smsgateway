@@ -2,6 +2,7 @@ from __future__ import absolute_import
 from datetime import datetime
 from logging import getLogger
 from redis import ConnectionPool, Redis
+from waffle.models import Switch
 
 from django.conf import settings
 from celery import shared_task
@@ -21,6 +22,16 @@ logger = getLogger(__name__)
 DEFAULT_LIMIT = getattr(settings, 'SMSGATEWAY_DEFAULT_LIMIT', 50)
 ACCOUNTS = settings.SMSGATEWAY_ACCOUNTS
 DEFAULT_DEFERRED_BACKEND = ACCOUNTS.get('__deferred__', None)
+
+PROCESS_SMSES_SWITCH = getattr(settings, 'SMSGATEWAY_PROCESS_SMSES_SWITCH', 'smsgateway-task-send-smses')
+
+
+def _should_process_smses():
+    switch = Switch.get(PROCESS_SMSES_SWITCH)
+    if not switch.pk:
+        # To remain backwards compatible, we will process smses if the switch hasn't been set at all
+        return True
+    return switch.active
 
 
 def _send_smses(send_deferred=False, backend=None, limit=None):
@@ -65,12 +76,14 @@ def _send_smses(send_deferred=False, backend=None, limit=None):
 
 @shared_task
 def send_smses():
-    _send_smses(limit=DEFAULT_LIMIT)
+    if _should_process_smses():
+        _send_smses(limit=DEFAULT_LIMIT)
 
 
 @shared_task
 def send_deferred_smses():
-    _send_smses(send_deferred=True, backend=DEFAULT_DEFERRED_BACKEND, limit=DEFAULT_LIMIT)
+    if _should_process_smses():
+        _send_smses(send_deferred=True, backend=DEFAULT_DEFERRED_BACKEND, limit=DEFAULT_LIMIT)
 
 
 inq_ts_fmt = '%Y-%m-%d %H:%M:%S'
