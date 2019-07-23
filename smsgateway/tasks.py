@@ -107,7 +107,7 @@ def process_smses(smsk, sms_id, account_slug):
     task_logger.debug('End processing incoming SMS key: %s', smsk)
 
 
-def recv_smses(account_slug='redistore', async=False):
+def recv_smses(account_slug='redistore', asynchronous=False):
     def _(key):
         return '{}{}'.format(racc['key_prefix'], key)
 
@@ -120,7 +120,7 @@ def recv_smses(account_slug='redistore', async=False):
     rconn = Redis(connection_pool=rpool)
     logger.info('Processing incoming SMSes for %s', account_slug)
 
-    process_func = process_smses.delay if async else process_smses
+    process_func = process_smses.delay if asynchronous else process_smses
 
     while True:
         smsk = rconn.lpop(_('inq'))

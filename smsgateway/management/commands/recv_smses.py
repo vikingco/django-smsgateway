@@ -15,4 +15,4 @@ class Command(BaseCommand):
                                 help='Process the SMSes via asynchronously via Celery')
 
     def handle(self, *args, **options):
-        recv_smses(options['backend'], options['async'])
+        recv_smses(options['backend'], options['asynchronous'])
