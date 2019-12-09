@@ -25,6 +25,9 @@ How to install:
         'smsgateway.backends.smsextrapro.SmsExtraProBackend',
     )
 
+    # The Redis used for locking the tasks
+    SMSGATEWAY_REDIS_URL = ''
+
 * Some backends support incoming text messages:
 
     # urls.py

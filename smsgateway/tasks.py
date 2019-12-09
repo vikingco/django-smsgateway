@@ -2,13 +2,13 @@ from __future__ import absolute_import
 from datetime import datetime
 from logging import getLogger
 from redis import ConnectionPool, Redis
+from redis.lock import Lock
 from waffle.models import Switch
 
 from django.conf import settings
 from celery import shared_task
 from celery.utils.log import get_task_logger
 from django_statsd.clients import statsd
-from locking.models import NonBlockingLock
 
 from smsgateway import get_account, send, send_queued
 from smsgateway.backends.base import SMSBackend
@@ -41,7 +41,8 @@ def _send_smses(send_deferred=False, backend=None, limit=None):
     else:
         send_lock_name = 'smsgateway_send_sms'
 
-    with NonBlockingLock.objects.acquire_lock(lock_name=send_lock_name):
+    with Lock(redis=Redis.from_url(settings.SMSGATEWAY_REDIS_URL), name='smsgateway-' + send_lock_name,
+              blocking_timeout=0):
         successes, failures = 0, 0
         try:
             # Get SMSes that need to be sent (deferred or non-deferred)
