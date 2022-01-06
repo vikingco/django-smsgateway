@@ -4,7 +4,7 @@ django-statsd-unleashed>=1.0.1
 statsd>=2.1.2
 
 redis>=3.0.0
-celery==4.0.2
+celery==5.2.2
 kombu==4.0.2
 billiard==3.5.0.2
 amqp==2.1.4
